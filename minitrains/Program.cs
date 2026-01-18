@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace minitrains
 {
     internal static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            // Show login first; only open main form when login returns OK.
+            using (var login = new Form_login())
+            {
+                var result = login.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    Application.Run(new Form_vezetes(login.LoggedInUserId, login.RememberMeChecked));
+                }
+                // otherwise exit — do not open Form_vezetes
+            }
         }
     }
 }

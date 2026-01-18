@@ -1,6 +1,6 @@
 ﻿namespace minitrains
 {
-    partial class Form3
+    partial class Form_login
     {
         /// <summary>
         /// Required designer variable.
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_login));
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -50,6 +51,8 @@
             // 
             // button2
             // 
+            this.button2.AccessibleRole = System.Windows.Forms.AccessibleRole.Indicator;
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button2.Location = new System.Drawing.Point(41, 669);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(102, 66);
@@ -125,7 +128,7 @@
             this.checkBoxRememberMe.UseVisualStyleBackColor = false;
             this.checkBoxRememberMe.Visible = false;
             // 
-            // Form3
+            // Form_login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -140,7 +143,8 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Name = "Form3";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "Form_login";
             this.Text = "Form3";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form3_FormClosing);
             this.ResumeLayout(false);

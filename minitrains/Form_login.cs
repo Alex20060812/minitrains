@@ -6,16 +6,32 @@ using System.Windows.Forms;
 
 namespace minitrains
 {
-    public partial class Form3 : Form
+    public partial class Form_login : Form
     {
         private const string RememberFile = "remember.dat";
+        
         public int LoggedInUserId { get; private set; }
-        public Form3()
-        {
-            InitializeComponent();
+        public bool RememberMeChecked { get; private set; }
 
-            // Ha létezik a remember.dat → próbáljon automatikusan beléptetni
-            TryAutoLogin();
+        public Form_login()
+        {
+            this.Shown += Form_login_Shown;
+            MessageBox.Show("Automatikus bejelentkezés!");
+            InitializeComponent();
+            
+            // Try auto-login after the form is shown (safe to close the form then).
+
+        }
+
+        private void Form_login_Shown(object sender, EventArgs e)
+        {
+            // If auto-login succeeds, set DialogResult and close the dialog.
+            if (TryAutoLogin())
+            {
+                
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
         }
 
         bool regMode = false; // true = regisztráció, false = login
@@ -91,15 +107,21 @@ namespace minitrains
             {
                 conn.Open();
 
-                var cmd = new MySqlCommand("SELECT remember_token FROM users WHERE username=@u", conn);
+                var cmd = new MySqlCommand(
+                    "SELECT id FROM users WHERE username=@u AND remember_token=@t",
+                    conn
+                );
                 cmd.Parameters.AddWithValue("@u", savedUsername);
-                var dbToken = cmd.ExecuteScalar();
+                cmd.Parameters.AddWithValue("@t", savedToken);
 
-                if (dbToken == null || dbToken.ToString() != savedToken)
+                var dbId = cmd.ExecuteScalar();
+                if (dbId == null)
                     return false;
 
                 // Sikeres automatikus belépés!
-                MessageBox.Show("Automatikus bejelentkezés!");
+                this.LoggedInUserId = Convert.ToInt32(dbId);
+                this.RememberMeChecked = true;
+                
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -200,6 +222,7 @@ namespace minitrains
 
                         // 🔥 Itt tároljuk a felhasználói ID-t a fő programnak!
                         this.LoggedInUserId = userId;
+                        this.RememberMeChecked = checkBoxRememberMe.Checked;
 
                         MessageBox.Show("Sikeres bejelentkezés!");
 
@@ -214,7 +237,7 @@ namespace minitrains
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
             if(this.DialogResult != DialogResult.OK)
-    {
+            {
                 Application.Exit();
             }
         }

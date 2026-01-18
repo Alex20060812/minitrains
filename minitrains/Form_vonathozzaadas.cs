@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace minitrains
 {
-    public partial class Form2 : Form
+    public partial class Form_vonathozzaadas : Form
     {
-        public Form2()
+        public Form_vonathozzaadas()
         {
             InitializeComponent();
         }

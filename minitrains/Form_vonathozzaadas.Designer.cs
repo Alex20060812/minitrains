@@ -1,6 +1,6 @@
 ﻿namespace minitrains
 {
-    partial class Form2
+    partial class Form_vonathozzaadas
     {
         /// <summary>
         /// Required designer variable.
