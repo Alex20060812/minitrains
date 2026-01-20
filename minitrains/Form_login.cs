@@ -16,7 +16,7 @@ namespace minitrains
         public Form_login()
         {
             this.Shown += Form_login_Shown;
-            MessageBox.Show("Automatikus bejelentkezés!");
+            
             InitializeComponent();
             
             // Try auto-login after the form is shown (safe to close the form then).
