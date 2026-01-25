@@ -1,8 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
+using Mysqlx.Crud;
 using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace minitrains
 {
@@ -171,6 +173,13 @@ namespace minitrains
                     cmd.Parameters.AddWithValue("@t", token);
                     cmd.ExecuteNonQuery();
 
+                    var cmd2 = new MySqlCommand(
+                        "INSERT INTO trains(user_id, name) VALUES(@u_id, 'Default')",conn);
+                    
+                    cmd2.Parameters.AddWithValue("@u_id", cmd.LastInsertedId);
+                    cmd2.ExecuteNonQuery();
+
+                    
                     if (checkBoxRememberMe.Checked)
                         SaveRememberFile(username, token);
 

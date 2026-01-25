@@ -95,6 +95,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form_function_editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form_vezetes.cs">
       <SubType>Form</SubType>
     </Compile>
