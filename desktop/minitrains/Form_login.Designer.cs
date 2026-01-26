@@ -132,8 +132,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::minitrains.Properties.Resources._20250502_IMG_1315_2;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(784, 761);
             this.Controls.Add(this.checkBoxRememberMe);
             this.Controls.Add(this.button3);
