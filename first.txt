@@ -1,0 +1,159 @@
+Adatbázis séma – ER modell áttekintés
+Ez a dokumentum a modellvasút-alkalmazás adatbázisának entitásait,
+kapcsolatait és normalizálási megfontolásait foglalja össze áttekinthető formában.
+
+
+Entitások
+• users
+• trains
+• train_details
+• functions
+• functions_settings
+
+
+Kapcsolatok összefoglalása
+users (1) — (N) trains
+trains (1) — (N) train_details
+trains (1) — (N) functions
+functions (1) — (N) functions_settings
+Normalizálás
+A séma megfelel az 1NF, 2NF és 3NF követelményeinek.
+A train_details és functions_settings táblák esetén modell-szintű döntések
+befolyásolhatják a végső kialakítást (1–1 kapcsolat, illetve user-specifikus beállítások).
+ER diagram
+Az alábbi ábra vizuálisan mutatja be az entitásokat és kapcsolataikat:
+ 
+
+Az adatbázist létrehozó script:
+
+-- Adatbázis létrehozása
+CREATE DATABASE IF NOT EXISTS modellvasut
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_hungarian_ci;
+
+USE modellvasut;
+
+-- =====================
+-- users
+-- =====================
+CREATE TABLE users (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    remember_token VARCHAR(255),
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_users_username (username)
+) ENGINE=InnoDB;
+
+-- =====================
+-- trains
+-- =====================
+CREATE TABLE trains (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    user_id INT(11) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_trains_user_id (user_id),
+    CONSTRAINT fk_trains_users
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- =====================
+-- functions
+-- =====================
+CREATE TABLE functions (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    train_id INT(11) NOT NULL,
+    number INT(11) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    icon VARCHAR(100),
+    hidden TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    KEY idx_functions_train_id (train_id),
+    CONSTRAINT fk_functions_trains
+        FOREIGN KEY (train_id)
+        REFERENCES trains(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- =====================
+-- functions_settings
+-- =====================
+CREATE TABLE functions_settings (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    function_id INT(11) NOT NULL,
+    custom_name VARCHAR(50),
+    default_state TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    KEY idx_functions_settings_function_id (function_id),
+    CONSTRAINT fk_functions_settings_functions
+        FOREIGN KEY (function_id)
+        REFERENCES functions(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- =====================
+-- train_details
+-- =====================
+CREATE TABLE train_details (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    train_id INT(11) NOT NULL,
+    dcc_address INT(11) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_train_details_train_id (train_id),
+    CONSTRAINT fk_train_details_trains
+        FOREIGN KEY (train_id)
+        REFERENCES trains(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+Alapvető insertek:
+
+INSERT INTO users (id, username, password_hash, remember_token) VALUES
+(1, 'admin',  'hash_alex',  NULL),
+(2, 'peter',  'hash_peter',  NULL),
+(3, 'anna',   'hash_anna',   NULL),
+(4, 'tamas',  'hash_tamas',  NULL),
+(5, 'zoltan', 'hash_zoltan', NULL);
+
+
+INSERT INTO trains (id, user_id, name) VALUES
+(1, 1, 'MÁV V43 Szili'),
+(2, 2, 'MÁV M62 Szergej'),
+(3, 3, 'GySEV V63 Gigant'),
+(4, 4, 'DB BR218'),
+(5, 5, 'ÖBB Taurus');
+
+
+INSERT INTO train_details (id, train_id, dcc_address) VALUES
+(1, 1, 3),
+(2, 2, 5),
+(3, 3, 7),
+(4, 4, 9),
+(5, 5, 11);
+INSERT INTO functions (id, train_id, number, name, icon, hidden) VALUES
+(1, 1, 0, 'Világítás', 'light.png', 0),
+(2, 1, 1, 'Kürt', 'horn.png', 0),
+
+(3, 2, 0, 'Világítás', 'light.png', 0),
+(4, 2, 1, 'Motorhang', 'engine.png', 0),
+
+(5, 3, 0, 'Világítás', 'light.png', 0),
+(6, 3, 2, 'Kompresszor', 'compressor.png', 0),
+
+INSERT INTO functions_settings (id, function_id, custom_name, default_state) VALUES
+(1, 1, 'Fővilágítás', 1),
+(2, 2, 'Rövid kürt', 0),
+
+(3, 3, 'Menetfény', 1),
+(4, 4, 'Alap motorhang', 1),
+
+(5, 5, 'LED világítás', 1),
+(6, 6, 'Légsűrítő', 0),
