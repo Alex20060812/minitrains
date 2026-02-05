@@ -1,7 +1,7 @@
-Projekt neve: Minitrains
-Csapattagok: Kovácsevics Alex && Kovács Ákos Gergő
-Weboldal(HTML,CSS): Kovács Ákos
-Asztali alkalmazás(C# Winforms): Kovácsevics Alex, Kovács Ákos
+Projekt neve: Minitrains <br>
+Csapattagok: Kovácsevics Alex && Kovács Ákos Gergő <br>
+Weboldal(HTML,CSS): Kovács Ákos <br>
+Asztali alkalmazás(C# Winforms): Kovácsevics Alex, Kovács Ákos <br>
 Adatbázis(MySql): Kovácsevics Alex
 
 Az alkalmazásban a felhasználó a számítógépéről tudja vezérelni a Z21 központtal rendelkező, digitális modellvasútját. Amennyiben egy másik eszközről jelentkezik be a felhasználó, a korábban beállított vasútmodelljei automatikusan betöltődnek.
