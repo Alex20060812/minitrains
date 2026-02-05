@@ -1,0 +1,58 @@
+.menu
+{
+    color: #c3e0ff;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+     
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+ }
+.nav-links
+{
+    display: flex;
+    justify-items: right;
+    gap: 20px;
+    width: 100%;
+    
+}
+.cim
+{
+    justify-content: left;
+    display:flex;
+    
+    
+    
+    
+  
+
+}
+
+header
+{
+    background-color: #178edd;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    
+}
+
+#dowload
+{
+    background-image: url(IMG_1305.jpg);
+    background-size: cover;
+    text-align: center;
+    width: 770px;
+    border: 15px solid #178edd;
+    padding: 50px;
+    margin: 20px;
+    align-items: center;
+    display: flex;
+    height: 500px;
+    color: white;
+    justify-items: center; ;
+
+}
