@@ -131,17 +131,9 @@ namespace minitrains
             }
         }
 
-        // --------------------------- GOMBOK ESEMÉNYEI ------------------------------
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            regMode = true;
-            button3.Show(); textBox1.Show(); textBox2.Show(); label1.Show(); label2.Show(); checkBoxRememberMe.Show();
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
-            regMode = false;
+            
             button3.Show(); textBox1.Show(); textBox2.Show(); label1.Show(); label2.Show(); checkBoxRememberMe.Show();
         }
 
@@ -160,32 +152,8 @@ namespace minitrains
             {
                 conn.Open();
 
-                if (regMode)   // -------------------- REGISZTRÁCIÓ --------------------
-                {
-                    string hashed = HashPassword(password);
-                    string token = GenerateToken();
-
-                    var cmd = new MySqlCommand(
-                        "INSERT INTO users (username, password_hash, remember_token) VALUES (@u, @p, @t)", conn);
-
-                    cmd.Parameters.AddWithValue("@u", username);
-                    cmd.Parameters.AddWithValue("@p", hashed);
-                    cmd.Parameters.AddWithValue("@t", token);
-                    cmd.ExecuteNonQuery();
-
-                    var cmd2 = new MySqlCommand(
-                        "INSERT INTO trains(user_id, name) VALUES(@u_id, 'Default')",conn);
-                    
-                    cmd2.Parameters.AddWithValue("@u_id", cmd.LastInsertedId);
-                    cmd2.ExecuteNonQuery();
-
-                    
-                    if (checkBoxRememberMe.Checked)
-                        SaveRememberFile(username, token);
-
-                    MessageBox.Show("Sikeres regisztráció!");
-                }
-                else           // --------------------- LOGIN -------------------------
+                
+                          // --------------------- LOGIN -------------------------
                 {
                     var cmd = new MySqlCommand(
                         "SELECT id, password_hash, remember_token FROM users WHERE username=@u",

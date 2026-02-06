@@ -159,6 +159,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\20250502-IMG_1315-2.jpg" />
+    <Content Include="Resources\compressor.png" />
+    <Content Include="Resources\door.png" />
+    <Content Include="Resources\engine.png" />
+    <Content Include="Resources\gozos.bmp" />
+    <Content Include="Resources\horn.png" />
+    <Content Include="Resources\iv.jpg" />
+    <Content Include="Resources\light.png" />
+    <Content Include="Resources\mute.png" />
+    <Content Include="Resources\parkbrake.png" />
+    <Content Include="Resources\rossz palya.jpg" />
+    <Content Include="Resources\sand.jpg" />
+    <Content Include="Resources\switch.png" />
+    <Content Include="Resources\tavolsagi.png" />
+    <Content Include="Resources\tolato.png" />
+    <Content Include="Resources\tompitott.png" />
+    <Content Include="Resources\ventillator.png" />
+    <Content Include="Resources\volume.png" />
+    <None Include="Resources\20250502-IMG_1315-21.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

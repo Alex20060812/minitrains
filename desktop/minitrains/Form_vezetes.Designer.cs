@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_vezetes));
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
@@ -136,10 +137,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(246, 496);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(206, 496);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(454, 226);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(584, 340);
             this.flowLayoutPanel1.TabIndex = 11;
             // 
             // button4
@@ -209,7 +210,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(427, 789);
+            this.button6.Location = new System.Drawing.Point(427, 850);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(100, 51);
             this.button6.TabIndex = 15;
@@ -221,8 +222,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(984, 961);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.checkBox1);

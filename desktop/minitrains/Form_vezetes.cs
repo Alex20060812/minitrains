@@ -48,7 +48,7 @@ namespace minitrains
                 Button btn = new Button
                 {
                     Text = $"F{idx}",
-                    Size = new Size(Math.Max(32, flowLayoutPanel1.Width / 11), Math.Max(24, flowLayoutPanel1.Height / 5)),
+                    Size = new Size(Math.Max(24, flowLayoutPanel1.Width / 7), Math.Max(40, flowLayoutPanel1.Height / 6)),
                     Name = idx.ToString(),
                     Tag = idx,
                     FlatStyle = FlatStyle.Flat,
@@ -87,7 +87,7 @@ namespace minitrains
                
 
                 comboBox1.DisplayMember = "Name";
-                
+
                 if (comboBox1.Items.Count > 0) comboBox1.SelectedIndex = 0;
 
                 RefreshFunctionButtons(SelectedTrain());

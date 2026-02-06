@@ -2,6 +2,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace minitrains
@@ -9,7 +10,8 @@ namespace minitrains
     public partial class Form_function_editor : Form
     {
         private readonly int trainId;
-        private readonly string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
+        private readonly string connStr =
+            "Server=localhost;Database=modellvasut;user=root;password=;";
 
         public Form_function_editor(int trainId)
         {
@@ -27,41 +29,92 @@ namespace minitrains
                 using (var conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
+
                     var cmd = new MySqlCommand(@"
-                        SELECT f.id AS function_id, f.number, f.name AS default_name, f.hidden,
-                               fs.custom_name, fs.default_state
+                        SELECT f.id AS function_id,
+                               f.number,
+                               f.name AS default_name,
+                               f.hidden,
+                               f.icon AS icon_file,
+                               fs.custom_name,
+                               fs.default_state
                         FROM functions f
-                        LEFT JOIN functions_settings fs ON fs.function_id = f.id
+                        LEFT JOIN functions_settings fs
+                               ON fs.function_id = f.id
                         WHERE f.train_id = @tid
-                        ORDER BY f.number
-                    ", conn);
+                        ORDER BY f.number", conn);
+
                     cmd.Parameters.AddWithValue("@tid", trainId);
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var r = cmd.ExecuteReader())
                     {
-                        while (reader.Read())
+                        while (r.Read())
                         {
-                            int functionId = reader.GetInt32("function_id");
-                            int number = reader.GetInt32("number");
-                            string defaultName = reader.IsDBNull(reader.GetOrdinal("default_name")) ? string.Empty : reader.GetString("default_name");
-                            string customName = reader.IsDBNull(reader.GetOrdinal("custom_name")) ? string.Empty : reader.GetString("custom_name");
-                            bool hidden = !reader.IsDBNull(reader.GetOrdinal("hidden")) && reader.GetInt32("hidden") == 1;
-                            bool defaultState = !reader.IsDBNull(reader.GetOrdinal("default_state")) && reader.GetInt32("default_state") == 1;
-
                             int rowIndex = dataGridView1.Rows.Add();
                             var row = dataGridView1.Rows[rowIndex];
-                            row.Cells[0].Value = functionId; // hidden id
-                            row.Cells[1].Value = number;
-                            row.Cells[2].Value = !hidden; // Visible checkbox -> inverse of hidden
-                            row.Cells[3].Value = string.IsNullOrEmpty(customName) ? defaultName : customName;
-                            row.Cells[4].Value = defaultState;
+
+                            int functionId = r.GetInt32("function_id");
+                            int number = r.GetInt32("number");
+                            bool hidden = !r.IsDBNull(r.GetOrdinal("hidden")) &&
+                                          r.GetInt32("hidden") == 1;
+
+                            string defaultName =
+                                r.IsDBNull(r.GetOrdinal("default_name"))
+                                ? ""
+                                : r.GetString("default_name");
+
+                            string customName =
+                                r.IsDBNull(r.GetOrdinal("custom_name"))
+                                ? ""
+                                : r.GetString("custom_name");
+
+                            bool defaultState =
+                                !r.IsDBNull(r.GetOrdinal("default_state")) &&
+                                r.GetInt32("default_state") == 1;
+
+                            string iconFile =
+                                r.IsDBNull(r.GetOrdinal("icon_file"))
+                                ? ""
+                                : r.GetString("icon_file");
+
+                            row.Cells["colFunctionId"].Value = functionId;
+                            row.Cells["colNumber"].Value = number;
+                            row.Cells["colVisible"].Value = !hidden;
+                            row.Cells["colName"].Value =
+                                string.IsNullOrEmpty(customName)
+                                ? defaultName
+                                : customName;
+                            row.Cells["colDefaultState"].Value = defaultState;
+                            row.Cells["colIconFile"].Value =
+                                string.IsNullOrEmpty(iconFile)
+                                ? (object)DBNull.Value
+                                : iconFile;
+
+                            if (!string.IsNullOrEmpty(iconFile))
+                            {
+                                string path = Path.Combine(
+                                    Application.StartupPath, "icons", iconFile);
+
+                                if (File.Exists(path))
+                                {
+                                    try
+                                    {
+                                        using (var img = Image.FromFile(path))
+                                            row.Cells["colIcon"].Value = new Bitmap(img);
+                                    }
+                                    catch
+                                    {
+                                        row.Cells["colIcon"].Value = null;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not load functions: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not load functions:\n" + ex.Message);
             }
         }
 
@@ -77,54 +130,133 @@ namespace minitrains
                     {
                         if (row.IsNewRow) continue;
 
-                        int functionId = Convert.ToInt32(row.Cells[0].Value);
-                        bool visible = Convert.ToBoolean(row.Cells[2].Value);
-                        string name = Convert.ToString(row.Cells[3].Value) ?? string.Empty;
-                        bool defaultState = Convert.ToBoolean(row.Cells[4].Value);
+                        int functionId =
+                            Convert.ToInt32(row.Cells["colFunctionId"].Value);
 
-                        // update functions.hidden (0 = visible, 1 = hidden)
-                        var cmdUpd = new MySqlCommand("UPDATE functions SET hidden=@h WHERE id=@fid", conn);
+                        bool visible =
+                            Convert.ToBoolean(row.Cells["colVisible"].Value);
+
+                        bool defaultState =
+                            Convert.ToBoolean(row.Cells["colDefaultState"].Value);
+
+                        string name =
+                            Convert.ToString(row.Cells["colName"].Value) ?? "";
+
+                        object iconCell = row.Cells["colIconFile"].Value;
+                        string iconFile =
+                            iconCell == null || iconCell == DBNull.Value
+                            ? ""
+                            : Convert.ToString(iconCell);
+
+                        // ---- UPDATE functions (hidden + icon) ----
+                        var cmdUpd = new MySqlCommand(
+                            "UPDATE functions SET hidden=@h, icon=@ic WHERE id=@fid",
+                            conn);
+
                         cmdUpd.Parameters.AddWithValue("@h", visible ? 0 : 1);
+                        cmdUpd.Parameters.AddWithValue("@ic",
+                            string.IsNullOrEmpty(iconFile)
+                            ? (object)DBNull.Value
+                            : iconFile);
                         cmdUpd.Parameters.AddWithValue("@fid", functionId);
                         cmdUpd.ExecuteNonQuery();
 
-                        // upsert into functions_settings
-                        var cmdCheck = new MySqlCommand("SELECT id FROM functions_settings WHERE function_id=@fid", conn);
-                        cmdCheck.Parameters.AddWithValue("@fid", functionId);
-                        var existing = cmdCheck.ExecuteScalar();
+                        // ---- functions_settings upsert ----
+                        var cmdCheck = new MySqlCommand(
+                            "SELECT id FROM functions_settings WHERE function_id=@fid",
+                            conn);
 
-                        if (existing == null)
+                        cmdCheck.Parameters.AddWithValue("@fid", functionId);
+                        var exists = cmdCheck.ExecuteScalar();
+
+                        if (exists == null)
                         {
-                            var cmdIns = new MySqlCommand("INSERT INTO functions_settings (function_id, custom_name, default_state) VALUES (@fid,@cn,@ds)", conn);
+                            var cmdIns = new MySqlCommand(@"
+                                INSERT INTO functions_settings
+                                (function_id, custom_name, default_state)
+                                VALUES (@fid,@cn,@ds)", conn);
+
                             cmdIns.Parameters.AddWithValue("@fid", functionId);
-                            cmdIns.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
-                            cmdIns.Parameters.AddWithValue("@ds", defaultState ? 1 : 0);
+                            cmdIns.Parameters.AddWithValue("@cn",
+                                string.IsNullOrEmpty(name)
+                                ? (object)DBNull.Value
+                                : name);
+                            cmdIns.Parameters.AddWithValue("@ds",
+                                defaultState ? 1 : 0);
                             cmdIns.ExecuteNonQuery();
                         }
                         else
                         {
-                            var cmdUpd2 = new MySqlCommand("UPDATE functions_settings SET custom_name=@cn, default_state=@ds WHERE function_id=@fid", conn);
-                            cmdUpd2.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
-                            cmdUpd2.Parameters.AddWithValue("@ds", defaultState ? 1 : 0);
+                            var cmdUpd2 = new MySqlCommand(@"
+                                UPDATE functions_settings
+                                SET custom_name=@cn,
+                                    default_state=@ds
+                                WHERE function_id=@fid", conn);
+
+                            cmdUpd2.Parameters.AddWithValue("@cn",
+                                string.IsNullOrEmpty(name)
+                                ? (object)DBNull.Value
+                                : name);
+                            cmdUpd2.Parameters.AddWithValue("@ds",
+                                defaultState ? 1 : 0);
                             cmdUpd2.Parameters.AddWithValue("@fid", functionId);
                             cmdUpd2.ExecuteNonQuery();
                         }
                     }
                 }
 
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                DialogResult = DialogResult.OK;
+                Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not save changes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not save:\n" + ex.Message);
             }
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            if (dataGridView1.Columns[e.ColumnIndex].Name != "colIcon") return;
+
+            string iconsDir = Path.Combine(Application.StartupPath, "icons");
+            Directory.CreateDirectory(iconsDir);
+
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.InitialDirectory = iconsDir;
+                ofd.Filter = "Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.ico";
+
+                if (ofd.ShowDialog(this) == DialogResult.OK)
+                {
+                    string file = Path.GetFileName(ofd.FileName);
+                    string dest = Path.Combine(iconsDir, file);
+
+                    if (!File.Exists(dest))
+                        File.Copy(ofd.FileName, dest, true);
+
+                    dataGridView1.Rows[e.RowIndex]
+                        .Cells["colIconFile"].Value = file;
+
+                    try
+                    {
+                        using (var img = Image.FromFile(dest))
+                            dataGridView1.Rows[e.RowIndex]
+                                .Cells["colIcon"].Value = new Bitmap(img);
+                    }
+                    catch
+                    {
+                        dataGridView1.Rows[e.RowIndex]
+                            .Cells["colIcon"].Value = null;
+                    }
+                }
+            }
         }
     }
 
@@ -172,8 +304,13 @@ namespace minitrains
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colFunctionId", Visible = false });
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colNumber", HeaderText = "Number", ReadOnly = true });
             this.dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn() { Name = "colVisible", HeaderText = "Visible" });
+            this.dataGridView1.Columns.Add(new DataGridViewImageColumn() { Name = "colIcon", HeaderText = "Icon", ImageLayout = DataGridViewImageCellLayout.Zoom, Width = 40 });
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colName", HeaderText = "Name", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
             this.dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn() { Name = "colDefaultState", HeaderText = "Default On" });
+            // hidden column to store icon filename
+            this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colIconFile", Visible = false });
+
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
 
             // 
             // buttonSave
