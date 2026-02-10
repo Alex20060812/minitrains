@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Feb 05. 10:03
+-- Gép: 127.0.0.1:3307
+-- Létrehozás ideje: 2026. Feb 10. 11:48
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -119,7 +119,7 @@ CREATE TABLE `functions_settings` (
 
 INSERT INTO `functions_settings` (`id`, `function_id`, `custom_name`, `default_state`) VALUES
 (1, 1, 'f0', 1),
-(2, 2, 'Motorhang', 0),
+(2, 2, 'Motorhang', 1),
 (3, 3, 'f2', 0),
 (4, 4, 'f3', 0),
 (5, 5, 'f4', 0),
@@ -227,15 +227,16 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `remember_token` varchar(255) DEFAULT NULL
+  `remember_token` varchar(255) DEFAULT NULL,
+  `email` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- A tábla adatainak kiíratása `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password_hash`, `remember_token`) VALUES
-(1, 'Alex', 'znLhD5OqArQmHKxmFYUZ9Q==:J6PkBXpycIFVifne/7S1kMqpYwXUJkgJP1rr/lBx1P8=', 'SVHfT6XN1Jai+5raSLYHK0fm+a6aYtg4f1+2oOp6AWg=');
+INSERT INTO `users` (`id`, `username`, `password_hash`, `remember_token`, `email`) VALUES
+(1, 'Alex', 'znLhD5OqArQmHKxmFYUZ9Q==:J6PkBXpycIFVifne/7S1kMqpYwXUJkgJP1rr/lBx1P8=', 'eE36L1Nl5JpIzLnUBeJexzEGfklWu6p/decPIw3kY8Y=', '');
 
 --
 -- Indexek a kiírt táblákhoz
@@ -274,7 +275,8 @@ ALTER TABLE `train_details`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- A kiírt táblák AUTO_INCREMENT értéke
