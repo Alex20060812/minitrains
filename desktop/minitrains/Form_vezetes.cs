@@ -102,7 +102,7 @@ namespace minitrains
         private void LoadUserTrains()
         {
             if (CurrentUserId <= 0) return;
-
+            
             string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
 
             try

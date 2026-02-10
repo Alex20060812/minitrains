@@ -15,14 +15,11 @@ namespace minitrains
         public int LoggedInUserId { get; private set; }
         public bool RememberMeChecked { get; private set; }
 
+        public int port;
         public Form_login()
         {
-            this.Shown += Form_login_Shown;
-            
             InitializeComponent();
             
-            // Try auto-login after the form is shown (safe to close the form then).
-
         }
 
         private void Form_login_Shown(object sender, EventArgs e)
@@ -36,7 +33,7 @@ namespace minitrains
             }
         }
 
-        bool regMode = false; // true = regisztráció, false = login
+       
 
         // ------------------------------- JELSZÓ HASH -------------------------------
         public static string HashPassword(string password)
@@ -105,7 +102,7 @@ namespace minitrains
             string savedUsername = lines[0];
             string savedToken = lines[1];
 
-            using (var conn = new MySqlConnection("Server=localhost;Database=modellvasut;user=root;password=;"))
+            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password=;Port={port}"))
             {
                 conn.Open();
 
@@ -136,19 +133,18 @@ namespace minitrains
             
             button3.Show(); textBox1.Show(); textBox2.Show(); label1.Show(); label2.Show(); checkBoxRememberMe.Show();
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
             string username = textBox1.Text;
             string password = textBox2.Text;
-
+            port = (int)numericUpDown1.Value;
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Nem lehet üres!");
                 return;
             }
 
-            using (var conn = new MySqlConnection("Server=localhost;Database=modellvasut;user=root;password=;"))
+            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password=;Port={port}"))
             {
                 conn.Open();
 
