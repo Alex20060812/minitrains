@@ -6,8 +6,13 @@
     <title>MiniTrains</title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 </head>
-<body>
+<div class="carousel-container">
+    ...
+</div>
+
+<script src="index.js"></script>
     <header>
         
         <section id="home">
@@ -15,6 +20,10 @@
             <div class="cim">
                
             <h1>Welcome to MiniTrains</h1>
+           
+            
+                
+            </div>
             </div>
         <nav>
             <ul>
@@ -24,19 +33,79 @@
               <li><a href="#services">Leírás</a></li>
                 </div>
             </ul>
+            
           </nav>
+          
         </div>
+       
         </section>
-    </header>
+        </header>
+        <div class="carousel-container">
+            <div class="carousel" id="carousel">
+                <img src="https://www.trains.com/wp-content/uploads/2025/02/CTT-trzoniec-realistic-setting-0225.jpg" 
+                     alt="Model train realistic landscape" class="carousel-image" loading="lazy">
+                <img src="https://i.ytimg.com/vi/4m8inWO8cgg/sddefault.jpg" 
+                     alt="HO scale train in snow" class="carousel-image" loading="lazy">
+                <img src="https://cdn11.bigcommerce.com/s-stpzw4awzh/images/stencil/1240x826/uploaded_images/20211114-014209.jpg" 
+                     alt="Model railway bridge scene" class="carousel-image" loading="lazy">
+                <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg" 
+                     alt="Detailed model train diorama" class="carousel-image" loading="lazy">
+                <img src="https://i.redd.it/need-help-saving-elder-mans-massive-train-diorama-v0-8y9ilknvkqyd1.jpg?width=4000&format=pjpg&auto=webp&s=7bc5de982978b589de0483fa9ca02f73fcb2a62f" 
+                     alt="Large model train layout" class="carousel-image" loading="lazy">
+                <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg" 
+                     alt="Detailed HO scale city scene" class="carousel-image" loading="lazy">
+            </div>
+
+            <button class="carousel-btn prev-btn" id="prevBtn">❮</button>
+            <button class="carousel-btn next-btn" id="nextBtn">❯</button>
+
+            <div class="indicators" id="indicators"></div>
+        </div>
     <section id="dowload">
         <div class="dowload-content">
             <h2>Letöltés</h2>
             <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
             <a href="template" class="download-button" download>Letöltés</a>
         </div>
+        <!-- Index.html-be, pl. a carousel után -->
+
 
     </section>
 
+    <div id="authModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeAuthModal()">×</button>
+            
+            <h2 id="modalTitle">Bejelentkezés</h2>
+            
+            <div id="authMessage" class="auth-message" style="display:none;"></div>
+    
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="inpUsername">Felhasználónév</label>
+                    <input type="text" id="inpUsername" autocomplete="username" required>
+                </div>
+    
+                <div class="form-group">
+                    <label for="inpPassword">Jelszó</label>
+                    <input type="password" id="inpPassword" autocomplete="current-password" required>
+                </div>
+    
+                <button type="submit" id="submitBtn" class="btn-primary">Belépés</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Bejelentkezési státusz / gombok a header jobb oldalára -->
+    <div class="user-status" id="userStatus">
+        <button id="btnLogin"    class="btn-auth" onclick="openAuthModal('login')">Bejelentkezés</button>
+        <button id="btnRegister" class="btn-auth" onclick="openAuthModal('register')">Regisztráció</button>
+       
+        <span id="currentUserDisplay" style="display:none;">
+            Bejelentkezve: <strong id="currentUserName"></strong>
+            <button onclick="logout()" class="btn-logout">Kijelentkezés</button>
+        </span>
+    </div>
 
     
 </body>
