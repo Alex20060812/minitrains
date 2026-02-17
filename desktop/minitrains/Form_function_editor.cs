@@ -20,6 +20,9 @@ namespace minitrains
             LoadFunctions();
         }
 
+        /// <summary>
+        /// Betölti az adatbázisból a vonathoz tartozó funkciókat a DataGridView-be.
+        /// </summary>
         private void LoadFunctions()
         {
             dataGridView1.Rows.Clear();
@@ -29,85 +32,12 @@ namespace minitrains
                 using (var conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
-
-                    var cmd = new MySqlCommand(@"
-                        SELECT f.id AS function_id,
-                               f.number,
-                               f.name AS default_name,
-                               f.hidden,
-                               f.icon AS icon_file,
-                               fs.custom_name,
-                               fs.default_state
-                        FROM functions f
-                        LEFT JOIN functions_settings fs
-                               ON fs.function_id = f.id
-                        WHERE f.train_id = @tid
-                        ORDER BY f.number", conn);
-
-                    cmd.Parameters.AddWithValue("@tid", trainId);
-
+                    using (var cmd = CreateLoadFunctionsCommand(conn))
                     using (var r = cmd.ExecuteReader())
                     {
                         while (r.Read())
                         {
-                            int rowIndex = dataGridView1.Rows.Add();
-                            var row = dataGridView1.Rows[rowIndex];
-
-                            int functionId = r.GetInt32("function_id");
-                            int number = r.GetInt32("number");
-                            bool hidden = !r.IsDBNull(r.GetOrdinal("hidden")) &&
-                                          r.GetInt32("hidden") == 1;
-
-                            string defaultName =
-                                r.IsDBNull(r.GetOrdinal("default_name"))
-                                ? ""
-                                : r.GetString("default_name");
-
-                            string customName =
-                                r.IsDBNull(r.GetOrdinal("custom_name"))
-                                ? ""
-                                : r.GetString("custom_name");
-
-                            bool defaultState =
-                                !r.IsDBNull(r.GetOrdinal("default_state")) &&
-                                r.GetInt32("default_state") == 1;
-
-                            string iconFile =
-                                r.IsDBNull(r.GetOrdinal("icon_file"))
-                                ? ""
-                                : r.GetString("icon_file");
-
-                            row.Cells["colFunctionId"].Value = functionId;
-                            row.Cells["colNumber"].Value = number;
-                            row.Cells["colVisible"].Value = !hidden;
-                            row.Cells["colName"].Value =
-                                string.IsNullOrEmpty(customName)
-                                ? defaultName
-                                : customName;
-                            row.Cells["colDefaultState"].Value = defaultState;
-                            row.Cells["colIconFile"].Value =
-                                string.IsNullOrEmpty(iconFile)
-                                ? (object)DBNull.Value
-                                : iconFile;
-
-                            if (!string.IsNullOrEmpty(iconFile))
-                            {
-                                string path = Path.Combine(
-                                    Application.StartupPath, "icons", iconFile);
-
-                                if (File.Exists(path))
-                                {
-                                    try
-                                    {
-                                        using (var img = Image.FromFile(path))
-                                            row.Cells["colIcon"].Value = new Bitmap(img);
-                                    }
-                                    catch
-                                    {
-                                        row.Cells["colIcon"].Value = null;
-                                    }
-                                }
-                            }
+                            AddFunctionRow(r);
                         }
                     }
                 }
@@ -118,6 +48,81 @@ namespace minitrains
             }
         }
 
+        /// <summary>
+        /// Létrehozza az SQL parancsot a funkciók lekérdezéséhez.
+        /// </summary>
+        private MySqlCommand CreateLoadFunctionsCommand(MySqlConnection conn)
+        {
+            var cmd = new MySqlCommand(@"
+                    SELECT f.id AS function_id,
+                           f.number,
+                           f.name AS default_name,
+                           f.hidden,
+                           f.icon AS icon_file,
+                           fs.custom_name,
+                           fs.default_state
+                    FROM functions f
+                    LEFT JOIN functions_settings fs
+                           ON fs.function_id = f.id
+                    WHERE f.train_id = @tid
+                    ORDER BY f.number", conn);
+
+            cmd.Parameters.AddWithValue("@tid", trainId);
+            return cmd;
+        }
+
+        /// <summary>
+        /// Hozzáad egy sort a DataGridView-hez az adatbázisból olvasott funkció alapján.
+        /// </summary>
+        private void AddFunctionRow(IDataRecord r)
+        {
+            int rowIndex = dataGridView1.Rows.Add();
+            var row = dataGridView1.Rows[rowIndex];
+
+            int functionId = r.GetInt32(r.GetOrdinal("function_id"));
+            int number = r.GetInt32((r.GetOrdinal("number")));
+            bool hidden = !r.IsDBNull(r.GetOrdinal("hidden")) && r.GetInt32(r.GetOrdinal("hidden")) == 1;
+            string defaultName = r.IsDBNull(r.GetOrdinal("default_name")) ? "" : r.GetString(r.GetOrdinal("default_name"));
+            string customName = r.IsDBNull(r.GetOrdinal("custom_name")) ? "" : r.GetString(r.GetOrdinal("custom_name"));
+            bool defaultState = !r.IsDBNull(r.GetOrdinal("default_state")) && r.GetInt32(r.GetOrdinal("default_state")) == 1;
+            string iconFile = r.IsDBNull(r.GetOrdinal("icon_file")) ? "" : r.GetString(r.GetOrdinal("icon_file"));
+
+            row.Cells["colFunctionId"].Value = functionId;
+            row.Cells["colNumber"].Value = number;
+            row.Cells["colVisible"].Value = !hidden;
+            row.Cells["colName"].Value = string.IsNullOrEmpty(customName) ? defaultName : customName;
+            row.Cells["colDefaultState"].Value = defaultState;
+            row.Cells["colIconFile"].Value = string.IsNullOrEmpty(iconFile) ? (object)DBNull.Value : iconFile;
+
+            if (!string.IsNullOrEmpty(iconFile))
+            {
+                SetIconCell(row, iconFile);
+            }
+        }
+
+        /// <summary>
+        /// Beállítja az ikon cellát a megadott fájlnév alapján.
+        /// </summary>
+        private void SetIconCell(DataGridViewRow row, string iconFile)
+        {
+            string path = Path.Combine(Application.StartupPath, "icons", iconFile);
+            if (File.Exists(path))
+            {
+                try
+                {
+                    using (var img = Image.FromFile(path))
+                        row.Cells["colIcon"].Value = new Bitmap(img);
+                }
+                catch
+                {
+                    row.Cells["colIcon"].Value = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Elmenti a módosításokat az adatbázisba.
+        /// </summary>
         private void buttonSave_Click(object sender, EventArgs e)
         {
             try
@@ -125,86 +130,12 @@ namespace minitrains
                 using (var conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
-
                     foreach (DataGridViewRow row in dataGridView1.Rows)
                     {
                         if (row.IsNewRow) continue;
-
-                        int functionId =
-                            Convert.ToInt32(row.Cells["colFunctionId"].Value);
-
-                        bool visible =
-                            Convert.ToBoolean(row.Cells["colVisible"].Value);
-
-                        bool defaultState =
-                            Convert.ToBoolean(row.Cells["colDefaultState"].Value);
-
-                        string name =
-                            Convert.ToString(row.Cells["colName"].Value) ?? "";
-
-                        object iconCell = row.Cells["colIconFile"].Value;
-                        string iconFile =
-                            iconCell == null || iconCell == DBNull.Value
-                            ? ""
-                            : Convert.ToString(iconCell);
-
-                        // ---- UPDATE functions (hidden + icon) ----
-                        var cmdUpd = new MySqlCommand(
-                            "UPDATE functions SET hidden=@h, icon=@ic WHERE id=@fid",
-                            conn);
-
-                        cmdUpd.Parameters.AddWithValue("@h", visible ? 0 : 1);
-                        cmdUpd.Parameters.AddWithValue("@ic",
-                            string.IsNullOrEmpty(iconFile)
-                            ? (object)DBNull.Value
-                            : iconFile);
-                        cmdUpd.Parameters.AddWithValue("@fid", functionId);
-                        cmdUpd.ExecuteNonQuery();
-
-                        // ---- functions_settings upsert ----
-                        var cmdCheck = new MySqlCommand(
-                            "SELECT id FROM functions_settings WHERE function_id=@fid",
-                            conn);
-
-                        cmdCheck.Parameters.AddWithValue("@fid", functionId);
-                        var exists = cmdCheck.ExecuteScalar();
-
-                        if (exists == null)
-                        {
-                            var cmdIns = new MySqlCommand(@"
-                                INSERT INTO functions_settings
-                                (function_id, custom_name, default_state)
-                                VALUES (@fid,@cn,@ds)", conn);
-
-                            cmdIns.Parameters.AddWithValue("@fid", functionId);
-                            cmdIns.Parameters.AddWithValue("@cn",
-                                string.IsNullOrEmpty(name)
-                                ? (object)DBNull.Value
-                                : name);
-                            cmdIns.Parameters.AddWithValue("@ds",
-                                defaultState ? 1 : 0);
-                            cmdIns.ExecuteNonQuery();
-                        }
-                        else
-                        {
-                            var cmdUpd2 = new MySqlCommand(@"
-                                UPDATE functions_settings
-                                SET custom_name=@cn,
-                                    default_state=@ds
-                                WHERE function_id=@fid", conn);
-
-                            cmdUpd2.Parameters.AddWithValue("@cn",
-                                string.IsNullOrEmpty(name)
-                                ? (object)DBNull.Value
-                                : name);
-                            cmdUpd2.Parameters.AddWithValue("@ds",
-                                defaultState ? 1 : 0);
-                            cmdUpd2.Parameters.AddWithValue("@fid", functionId);
-                            cmdUpd2.ExecuteNonQuery();
-                        }
+                        SaveFunctionRow(conn, row);
                     }
                 }
-
                 DialogResult = DialogResult.OK;
                 Close();
             }
@@ -214,12 +145,85 @@ namespace minitrains
             }
         }
 
+        /// <summary>
+        /// Elment egy sort (funkciót) az adatbázisba.
+        /// </summary>
+        private void SaveFunctionRow(MySqlConnection conn, DataGridViewRow row)
+        {
+            int functionId = Convert.ToInt32(row.Cells["colFunctionId"].Value);
+            bool visible = Convert.ToBoolean(row.Cells["colVisible"].Value);
+            bool defaultState = Convert.ToBoolean(row.Cells["colDefaultState"].Value);
+            string name = Convert.ToString(row.Cells["colName"].Value) ?? "";
+            object iconCell = row.Cells["colIconFile"].Value;
+            string iconFile = iconCell == null || iconCell == DBNull.Value ? "" : Convert.ToString(iconCell);
+
+            UpdateFunction(conn, functionId, visible, iconFile);
+            UpsertFunctionSettings(conn, functionId, name, defaultState);
+        }
+
+        /// <summary>
+        /// Frissíti a functions táblát (hidden, icon mezõk).
+        /// </summary>
+        private void UpdateFunction(MySqlConnection conn, int functionId, bool visible, string iconFile)
+        {
+            var cmdUpd = new MySqlCommand(
+                "UPDATE functions SET hidden=@h, icon=@ic WHERE id=@fid", conn);
+
+            cmdUpd.Parameters.AddWithValue("@h", visible ? 0 : 1);
+            cmdUpd.Parameters.AddWithValue("@ic", string.IsNullOrEmpty(iconFile) ? (object)DBNull.Value : iconFile);
+            cmdUpd.Parameters.AddWithValue("@fid", functionId);
+            cmdUpd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Beszúrja vagy frissíti a functions_settings sort.
+        /// </summary>
+        private void UpsertFunctionSettings(MySqlConnection conn, int functionId, string name, bool defaultState)
+        {
+            var cmdCheck = new MySqlCommand(
+                "SELECT id FROM functions_settings WHERE function_id=@fid", conn);
+            cmdCheck.Parameters.AddWithValue("@fid", functionId);
+            var exists = cmdCheck.ExecuteScalar();
+
+            if (exists == null)
+            {
+                var cmdIns = new MySqlCommand(@"
+                        INSERT INTO functions_settings
+                        (function_id, custom_name, default_state)
+                        VALUES (@fid,@cn,@ds)", conn);
+
+                cmdIns.Parameters.AddWithValue("@fid", functionId);
+                cmdIns.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
+                cmdIns.Parameters.AddWithValue("@ds", defaultState ? 1 : 0);
+                cmdIns.ExecuteNonQuery();
+            }
+            else
+            {
+                var cmdUpd2 = new MySqlCommand(@"
+                        UPDATE functions_settings
+                        SET custom_name=@cn,
+                            default_state=@ds
+                        WHERE function_id=@fid", conn);
+
+                cmdUpd2.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
+                cmdUpd2.Parameters.AddWithValue("@ds", defaultState ? 1 : 0);
+                cmdUpd2.Parameters.AddWithValue("@fid", functionId);
+                cmdUpd2.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Mégse gomb eseménykezelõje.
+        /// </summary>
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
             Close();
         }
 
+        /// <summary>
+        /// Ikon cellára kattintás esetén lehetõséget ad új ikon kiválasztására.
+        /// </summary>
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;

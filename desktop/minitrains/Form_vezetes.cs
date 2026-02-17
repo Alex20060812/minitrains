@@ -7,12 +7,12 @@ using System.Windows.Forms;
 
 namespace minitrains
 {
-        public partial class Form_vezetes : Form
+    public partial class Form_vezetes : Form
     {
-        // internal DB-backed train model (different name than the old 'train' class)
+        // Belső, adatbázis-alapú vonatmodell
         private class TrainModel
         {
-            public int Id { get; set; } // DB id (0 = not persistent)
+            public int Id { get; set; }
             public string Name { get; set; }
             public int Address { get; set; }
             public int Speed { get; set; }
@@ -21,27 +21,41 @@ namespace minitrains
             public override string ToString() => Name;
         }
 
-        
-
         private readonly List<Button> functionButtons = new List<Button>();
         private readonly Dictionary<TrainModel, int> trainDbMap = new Dictionary<TrainModel, int>();
 
-        // Parameterless constructor added to allow calls that supply no arguments.
-        public Form_vezetes() : this(0, false)
-        {
-        }
+        public int CurrentUserId { get; }
+        public bool RememberMe { get; }
 
+        // Paraméter nélküli konstruktor
+        public Form_vezetes() : this(0, false) { }
+
+        // Fő konstruktor, inicializálja a formot és betölti a vonatokat
         public Form_vezetes(int userId, bool rememberMe)
         {
             InitializeComponent();
             CurrentUserId = userId;
             RememberMe = rememberMe;
 
-            // show the remember checkbox only if the user previously chose "Remember me"
             checkBox1.Visible = RememberMe;
             checkBox1.Checked = RememberMe;
 
-            // create UI buttons
+            InitFunctionButtons();
+            LoadUserTrains();
+
+            if (comboBox1.Items.Count == 0)
+            {
+                comboBox1.DisplayMember = "Name";
+                if (comboBox1.Items.Count > 0) comboBox1.SelectedIndex = 0;
+                RefreshFunctionButtons(SelectedTrain());
+            }
+        }
+
+        /// <summary>
+        /// Létrehozza és inicializálja a funkciógombokat a felületen.
+        /// </summary>
+        private void InitFunctionButtons()
+        {
             for (int i = 0; i < 29; i++)
             {
                 int idx = i;
@@ -54,55 +68,41 @@ namespace minitrains
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.DimGray,
                     ForeColor = Color.White,
-                    TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-                    ImageAlign = System.Drawing.ContentAlignment.MiddleCenter
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    ImageAlign = ContentAlignment.MiddleCenter
                 };
 
-                btn.Click += (s, e) =>
-                {
-                    var selTrain = SelectedTrain();
-                    if (selTrain == null) return;
-                    if (selTrain.ActiveFunctions.Contains(idx))
-                    {
-                        selTrain.ActiveFunctions.Remove(idx);
-                        gombfrissites(btn, false);
-                    }
-                    else
-                    {
-                        selTrain.ActiveFunctions.Add(idx);
-                        gombfrissites(btn, true);
-                    }
-                };
-
+                btn.Click += (s, e) => ToggleFunctionButton(btn, idx);
                 flowLayoutPanel1.Controls.Add(btn);
                 functionButtons.Add(btn);
             }
+        }
 
-            // load trains and functions from DB for the current user
-            LoadUserTrains();
-
-            // fallback if no trains found
-            if (comboBox1.Items.Count == 0)
+        /// <summary>
+        /// Funkciógomb állapotának átváltása a kiválasztott vonathoz.
+        /// </summary>
+        private void ToggleFunctionButton(Button btn, int idx)
+        {
+            var selTrain = SelectedTrain();
+            if (selTrain == null) return;
+            if (selTrain.ActiveFunctions.Contains(idx))
             {
-               
-
-                comboBox1.DisplayMember = "Name";
-
-                if (comboBox1.Items.Count > 0) comboBox1.SelectedIndex = 0;
-
-                RefreshFunctionButtons(SelectedTrain());
+                selTrain.ActiveFunctions.Remove(idx);
+                UpdateButtonState(btn, false);
+            }
+            else
+            {
+                selTrain.ActiveFunctions.Add(idx);
+                UpdateButtonState(btn, true);
             }
         }
 
-        public int CurrentUserId { get; }
-        public bool RememberMe { get; }
-
-        
-
+        /// <summary>
+        /// Betölti a felhasználóhoz tartozó vonatokat az adatbázisból.
+        /// </summary>
         private void LoadUserTrains()
         {
             if (CurrentUserId <= 0) return;
-            
             string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
 
             try
@@ -137,24 +137,25 @@ namespace minitrains
                 if (comboBox1.Items.Count > 0)
                 {
                     comboBox1.SelectedIndex = 0;
-                    // load functions for the first train
                     LoadFunctionsForTrain(SelectedTrain());
                 }
             }
             catch
             {
-                // ignore DB errors for now — keep offline fallback
+                // DB hibák figyelmen kívül hagyása
             }
         }
 
+        /// <summary>
+        /// Betölti a kiválasztott vonathoz tartozó funkciókat az adatbázisból.
+        /// </summary>
         private void LoadFunctionsForTrain(TrainModel sel)
         {
             if (sel == null) return;
             if (!trainDbMap.TryGetValue(sel, out int trainId))
-                return; // no DB data for this train
+                return;
 
             sel.ActiveFunctions.Clear();
-
             string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
 
             try
@@ -163,17 +164,16 @@ namespace minitrains
                 {
                     conn.Open();
                     var cmd = new MySqlCommand(@"
-                        SELECT f.id AS function_id, f.number, f.name AS default_name, f.hidden,
-                               fs.custom_name, fs.default_state
-                        FROM functions f
-                        LEFT JOIN functions_settings fs ON fs.function_id = f.id
-                        WHERE f.train_id = @tid
-                    ", conn);
+                            SELECT f.id AS function_id, f.number, f.name AS default_name, f.hidden,
+                                   fs.custom_name, fs.default_state
+                            FROM functions f
+                            LEFT JOIN functions_settings fs ON fs.function_id = f.id
+                            WHERE f.train_id = @tid
+                        ", conn);
                     cmd.Parameters.AddWithValue("@tid", trainId);
 
                     using (var reader = cmd.ExecuteReader())
                     {
-                        // reset any customizations on buttons
                         foreach (var btn in functionButtons)
                         {
                             btn.Visible = true;
@@ -188,7 +188,6 @@ namespace minitrains
                             bool hidden = !reader.IsDBNull(reader.GetOrdinal("hidden")) && reader.GetInt32("hidden") == 1;
                             bool defaultState = !reader.IsDBNull(reader.GetOrdinal("default_state")) && reader.GetInt32("default_state") == 1;
 
-                            // find the button with Tag == number
                             var btn = functionButtons.Find(b => (b.Tag as int?) == number);
                             if (btn != null)
                             {
@@ -209,22 +208,31 @@ namespace minitrains
             }
             catch
             {
-                // ignore DB errors
+                // DB hibák figyelmen kívül hagyása
             }
         }
 
-        private void sebessegkiiras()
+        /// <summary>
+        /// Frissíti a sebesség kijelzőt a kiválasztott vonat alapján.
+        /// </summary>
+        private void UpdateSpeedLabel()
         {
             var sel = SelectedTrain();
             double sebesseg = Math.Round(sel.Speed * 4.1);
             label1.Text = "Sebesség: " + sebesseg.ToString() + " km/h";
         }
 
-        private void gombfrissites(Button btn, bool aktiv)
+        /// <summary>
+        /// Frissíti egy gomb színét az aktív állapot alapján.
+        /// </summary>
+        private void UpdateButtonState(Button btn, bool aktiv)
         {
             btn.BackColor = aktiv ? Color.DarkBlue : Color.DimGray;
         }
 
+        /// <summary>
+        /// Frissíti az összes funkciógomb állapotát a kiválasztott vonat alapján.
+        /// </summary>
         private void RefreshFunctionButtons(TrainModel sel)
         {
             if (sel == null) return;
@@ -234,38 +242,53 @@ namespace minitrains
                 if (btn.Tag is int idx)
                 {
                     bool active = sel.ActiveFunctions.Contains(idx);
-                    gombfrissites(btn, active);
+                    UpdateButtonState(btn, active);
                 }
             }
         }
 
+        /// <summary>
+        /// Növeli a sebességet egy egységgel.
+        /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
             if (trackBar1.Value < trackBar1.Maximum) trackBar1.Value += 1;
             SelectedTrain().Speed = trackBar1.Value;
-            sebessegkiiras();
+            UpdateSpeedLabel();
         }
 
+        /// <summary>
+        /// Visszaállítja a sebességet nullára.
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
             SelectedTrain().Speed = 0;
             trackBar1.Value = 0;
-            sebessegkiiras();
+            UpdateSpeedLabel();
         }
 
+        /// <summary>
+        /// Csökkenti a sebességet egy egységgel.
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             if (trackBar1.Value > trackBar1.Minimum) trackBar1.Value -= 1;
             SelectedTrain().Speed = trackBar1.Value;
-            sebessegkiiras();
+            UpdateSpeedLabel();
         }
 
+        /// <summary>
+        /// A sebesség csúszka mozgatására frissíti a sebességet.
+        /// </summary>
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             SelectedTrain().Speed = trackBar1.Value;
-            sebessegkiiras();
+            UpdateSpeedLabel();
         }
 
+        /// <summary>
+        /// Vonat kiválasztásakor frissíti a kijelzőket és betölti a funkciókat.
+        /// </summary>
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var sel = SelectedTrain();
@@ -276,12 +299,13 @@ namespace minitrains
             label1.Text = "Sebesség: " + Math.Round(sel.Speed * 4.1).ToString() + " km/h";
             trackBar1.Value = sel.Speed;
 
-            // load functions for the newly selected train
             LoadFunctionsForTrain(sel);
-
             RefreshFunctionButtons(sel);
         }
 
+        /// <summary>
+        /// Irányváltás gomb: megfordítja a vonat irányát és nullázza a sebességet.
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             trackBar1.Value = 0;
@@ -290,7 +314,18 @@ namespace minitrains
             label1.Text = "Sebesség: 0 km/h";
         }
 
+        /// <summary>
+        /// Új vonat hozzáadása az adatbázishoz és a felülethez.
+        /// </summary>
         private void button5_Click(object sender, EventArgs e)
+        {
+            AddNewTrain();
+        }
+
+        /// <summary>
+        /// Új vonat hozzáadása logika külön metódusba szervezve.
+        /// </summary>
+        private void AddNewTrain()
         {
             using (var kisAblak = new Form_vonathozzaadas())
             {
@@ -314,7 +349,6 @@ namespace minitrains
                         conn.Open();
                         using (var tran = conn.BeginTransaction())
                         {
-                            // Insert train
                             using (var cmd = new MySqlCommand("INSERT INTO trains (user_id, name) VALUES (@uid, @name)", conn, tran))
                             {
                                 cmd.Parameters.AddWithValue("@uid", CurrentUserId);
@@ -322,14 +356,12 @@ namespace minitrains
                                 cmd.ExecuteNonQuery();
                             }
 
-                            // Get inserted train id
                             long newId;
                             using (var idCmd = new MySqlCommand("SELECT LAST_INSERT_ID()", conn, tran))
                             {
                                 newId = Convert.ToInt64(idCmd.ExecuteScalar());
                             }
 
-                            // Insert train_details
                             using (var cmdDet = new MySqlCommand("INSERT INTO train_details (train_id, dcc_address) VALUES (@tid, @addr)", conn, tran))
                             {
                                 cmdDet.Parameters.AddWithValue("@tid", newId);
@@ -337,7 +369,6 @@ namespace minitrains
                                 cmdDet.ExecuteNonQuery();
                             }
 
-                            // Insert functions f0..f28, visible, names f0..f28
                             using (var cmdFunc = new MySqlCommand("", conn, tran))
                             {
                                 for (int i = 0; i <= 28; i++)
@@ -351,13 +382,10 @@ namespace minitrains
                                 }
                             }
 
-                            // Optionally create default functions_settings rows (empty custom_name, default_state 0)
-                            // This block is safe if functions_settings exists; if not, it's fine to omit.
                             using (var cmdFs = new MySqlCommand("", conn, tran))
                             {
                                 for (int i = 0; i <= 28; i++)
                                 {
-                                    // Find the function id just inserted for this train+number
                                     cmdFs.CommandText = @"SELECT id FROM functions WHERE train_id=@tid AND number=@num LIMIT 1";
                                     cmdFs.Parameters.Clear();
                                     cmdFs.Parameters.AddWithValue("@tid", newId);
@@ -377,7 +405,6 @@ namespace minitrains
 
                             tran.Commit();
 
-                            // Add to UI and select it
                             var newTrain = new TrainModel { Id = (int)newId, Name = szoveg, Address = (int)szam, Speed = 0, Direction = true };
                             comboBox1.Items.Add(newTrain);
                             trainDbMap[newTrain] = (int)newId;
@@ -392,6 +419,9 @@ namespace minitrains
             }
         }
 
+        /// <summary>
+        /// Funkciók szerkesztése gomb: megnyitja a szerkesztő ablakot.
+        /// </summary>
         private void button6_Click(object sender, EventArgs e)
         {
             var sel = SelectedTrain();
@@ -406,33 +436,27 @@ namespace minitrains
             {
                 if (editor.ShowDialog() == DialogResult.OK)
                 {
-                    // reload functions to reflect saved changes
                     LoadFunctionsForTrain(sel);
                 }
             }
         }
 
+        /// <summary>
+        /// "Remember me" checkbox változásának kezelése.
+        /// </summary>
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            // If user unchecks remember -> hide checkbox and clear stored remember token + file,
-            // so next start they must login again.
             if (!checkBox1.Checked)
             {
                 checkBox1.Visible = false;
-
-                // delete local remember file if present
                 const string rememberFile = "remember.dat";
                 try
                 {
                     if (File.Exists(rememberFile))
                         File.Delete(rememberFile);
                 }
-                catch
-                {
-                    // ignore file delete errors
-                }
+                catch { }
 
-                // clear token in database for this user
                 try
                 {
                     using (var conn = new MySqlConnection("Server=localhost;Database=modellvasut;user=root;password=;"))
@@ -443,20 +467,18 @@ namespace minitrains
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch
-                {
-                    // ignore DB errors here or log as needed
-                }
+                catch { }
             }
         }
 
+        /// <summary>
+        /// Visszaadja a kiválasztott vonatot, vagy null-t ha nincs.
+        /// </summary>
         private TrainModel SelectedTrain()
         {
-            // Prefer the ComboBox selected item if it is a TrainModel.
             if (comboBox1?.SelectedItem is TrainModel sel)
                 return sel;
 
-            // If nothing is selected but the ComboBox has items, select the first TrainModel.
             for (int i = 0; comboBox1 != null && i < comboBox1.Items.Count; i++)
             {
                 if (comboBox1.Items[i] is TrainModel first)
@@ -465,8 +487,6 @@ namespace minitrains
                     return first;
                 }
             }
-
-            // No train available.
             return null;
         }
     }
