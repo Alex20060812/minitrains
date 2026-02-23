@@ -131,6 +131,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UDP_3sec.cs" />
+    <Compile Include="UDP_commands.cs" />
     <Compile Include="UDP_connection.cs" />
     <Compile Include="UDP_responses.cs" />
     <EmbeddedResource Include="Form_vezetes.resx">

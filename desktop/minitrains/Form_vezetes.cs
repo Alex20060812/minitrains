@@ -49,6 +49,8 @@ namespace minitrains
                 if (comboBox1.Items.Count > 0) comboBox1.SelectedIndex = 0;
                 RefreshFunctionButtons(SelectedTrain());
             }
+
+            UDP_responses.OnResponseReceived += HandleUdpResponse;
         }
 
         /// <summary>
@@ -490,7 +492,7 @@ namespace minitrains
             return null;
         }
 
-        string _z21ip = string.Empty;
+        string _z21ip = "string.Empty";
         int _z21port = 0;
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
@@ -513,6 +515,35 @@ namespace minitrains
             {
                 _z21port = port;
             }
+        }
+
+        private void HandleUdpResponse(string message)
+        {
+            // UI frissítés a megfelelő szálon
+            if (label7.InvokeRequired)
+            {
+                label7.Invoke(new Action(() => label7.Text = message));
+            }
+            else
+            {
+                label7.Text = message;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            UDP_commands resp = new UDP_commands(_z21ip,_z21port);
+            resp.StartListening(_z21ip,_z21port);
+
+             UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
+            cmd.Logon();
+            cmd.Setup();
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+            UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
+            cmd.Track_ON();
         }
     }
 }

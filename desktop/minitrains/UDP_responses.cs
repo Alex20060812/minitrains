@@ -5,71 +5,28 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace minitrains
 {
 
 
-    public static class UDP_responses
+    internal class UDP_responses
     {
         private static CancellationTokenSource _cts;
         private static UdpClient _udpClient;
-
+        
         // Esemény, ha új válasz érkezik (UI-hoz vagy logikához)
         public static event Action<string> OnResponseReceived;
+        private readonly string _z21Ip;
+        private readonly int _z21Port;
 
-        public static void StartListening(int listenPort)
+        public UDP_responses(string z21Ip, int z21Port)
         {
-            _cts = new CancellationTokenSource();
-            _udpClient = new UdpClient(listenPort);
-
-            Task.Run(async () =>
-            {
-                while (!_cts.Token.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var result = await _udpClient.ReceiveAsync();
-                        InterpretZ21Response(result.Buffer);
-
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        // UDP kliens leállítva
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-            }, _cts.Token);
+            _z21Ip = z21Ip;
+            _z21Port = z21Port;
         }
-
-        public static void StopListening()
-        {
-            _cts?.Cancel();
-            _udpClient?.Close();
-        }
-
-        public static string InterpretZ21Response(byte[] response)
-        {
-
-            byte length = response[0];
-            byte header = response[2];
-            byte xHeader = response[4];
-            byte data1 = response[6];
-
-
-            if (header == 0x40 && xHeader == 0x21)
-                return "Z21 státusz válasz";
-            if (header == 0x40 && xHeader == 0x81)
-                return "Z21 rendszer információ válasz";
-            if (header == 0x40 && xHeader == 0x24)
-                return "Z21 speciális válasz";
-
-            return "Ismeretlen vagy nem kezelt válasz";
-        }
+        
     }
 
 }

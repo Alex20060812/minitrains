@@ -10,13 +10,14 @@ namespace minitrains
 {
     internal class UDP_connection
     {
+        public UdpClient udpClient = new UdpClient();
         public void SendToZ21(byte[] data, string ipAddress, int port)
         {
-            using (var udpClient = new UdpClient())
-            {
+            
+            
                 var endpoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
                 udpClient.Send(data, data.Length, endpoint);
-            }
+            
         }
     }
 }
