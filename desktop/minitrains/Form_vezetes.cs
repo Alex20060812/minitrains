@@ -489,5 +489,30 @@ namespace minitrains
             }
             return null;
         }
+
+        string _z21ip = string.Empty;
+        int _z21port = 0;
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            _z21ip = "192.168.0.111";
+            textBox1.Text = _z21ip;
+            _z21port = 21105;
+            textBox2.Text = _z21port.ToString();
+
+            textBox1.Enabled = false;
+            textBox2.Enabled = false;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox1.Enabled = true;
+            textBox2.Enabled = true;
+
+            _z21ip = textBox1.Text;
+            if (int.TryParse(textBox2.Text, out int port))
+            {
+                _z21port = port;
+            }
+        }
     }
 }
