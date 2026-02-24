@@ -16,10 +16,14 @@ namespace minitrains
         public bool RememberMeChecked { get; private set; }
 
         public int port;
+        
         public Form_login()
         {
             InitializeComponent();
-            
+            StreamReader sr = new StreamReader("port.txt");
+            port = int.Parse(sr.ReadLine());
+            this.Shown += new System.EventHandler(this.Form_login_Shown);
+
         }
 
         private void Form_login_Shown(object sender, EventArgs e)
@@ -137,7 +141,7 @@ namespace minitrains
         {
             string username = textBox1.Text;
             string password = textBox2.Text;
-            port = (int)numericUpDown1.Value;
+
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Nem lehet üres!");
@@ -148,40 +152,36 @@ namespace minitrains
             {
                 conn.Open();
 
-                
-                          // --------------------- LOGIN -------------------------
+                // --------------------- LOGIN -------------------------
+                var cmd = new MySqlCommand(
+                    "SELECT id, password_hash, remember_token FROM users WHERE username=@u",
+                    conn
+                );
+                cmd.Parameters.AddWithValue("@u", username);
+
+                using (var reader = cmd.ExecuteReader())
                 {
-                    var cmd = new MySqlCommand(
-                        "SELECT id, password_hash, remember_token FROM users WHERE username=@u",
-                        conn
-                    );
-                    cmd.Parameters.AddWithValue("@u", username);
-
-                    using (var reader = cmd.ExecuteReader())
+                    if (!reader.Read())
                     {
-                        if (!reader.Read())
-                        {
-                            MessageBox.Show("Hibás felhasználónév vagy jelszó!");
-                            return;
-                        }
+                        MessageBox.Show("Hibás felhasználónév vagy jelszó!");
+                        return;
+                    }
 
-                        int userId = reader.GetInt32("id");
-                        string storedHash = reader.GetString("password_hash");
+                    int userId = reader.GetInt32("id");
+                    string storedHash = reader.GetString("password_hash");
 
-                        string storedToken = reader.IsDBNull(reader.GetOrdinal("remember_token"))
-                                ? null
-                                : reader.GetString("remember_token");
+                    if (!VerifyPassword(password, storedHash))
+                    {
+                        MessageBox.Show("Hibás felhasználónév vagy jelszó!");
+                        return;
+                    }
 
-                        if (!VerifyPassword(password, storedHash))
-                        {
-                            MessageBox.Show("Hibás felhasználónév vagy jelszó!");
-                            return;
-                        }
+                    reader.Close();
 
-                        // Jelszó helyes → új token
+                    if (checkBoxRememberMe.Checked)
+                    {
+                        // Csak akkor generálj és ments token-t, ha be van pipálva!
                         string newToken = GenerateToken();
-                        reader.Close();
-
                         var cmd2 = new MySqlCommand(
                             "UPDATE users SET remember_token=@t WHERE username=@u",
                             conn
@@ -190,20 +190,31 @@ namespace minitrains
                         cmd2.Parameters.AddWithValue("@u", username);
                         cmd2.ExecuteNonQuery();
 
-                        if (checkBoxRememberMe.Checked)
-                            SaveRememberFile(username, newToken);
-
-                        // 🔥 Itt tároljuk a felhasználói ID-t a fő programnak!
-                        this.LoggedInUserId = userId;
-                        this.RememberMeChecked = checkBoxRememberMe.Checked;
-
-                        MessageBox.Show("Sikeres bejelentkezés!");
-
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
+                        SaveRememberFile(username, newToken);
                     }
-                }
+                    else
+                    {
+                        // Token törlése adatbázisból és fájlból
+                        var cmd2 = new MySqlCommand(
+                            "UPDATE users SET remember_token=NULL WHERE username=@u",
+                            conn
+                        );
+                        cmd2.Parameters.AddWithValue("@u", username);
+                        cmd2.ExecuteNonQuery();
 
+                        if (File.Exists(RememberFile))
+                            File.Delete(RememberFile);
+                    }
+
+                    // 🔥 Itt tároljuk a felhasználói ID-t a fő programnak!
+                    this.LoggedInUserId = userId;
+                    this.RememberMeChecked = checkBoxRememberMe.Checked;
+
+                    MessageBox.Show("Sikeres bejelentkezés!");
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
         }
 

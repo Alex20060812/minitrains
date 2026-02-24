@@ -13,8 +13,6 @@ namespace minitrains
         public UdpClient udpClient = new UdpClient();
         public void SendToZ21(byte[] data, string ipAddress, int port)
         {
-            
-            
                 var endpoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
                 udpClient.Send(data, data.Length, endpoint);
             

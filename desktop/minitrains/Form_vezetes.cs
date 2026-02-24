@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace minitrains
@@ -23,13 +24,13 @@ namespace minitrains
 
         private readonly List<Button> functionButtons = new List<Button>();
         private readonly Dictionary<TrainModel, int> trainDbMap = new Dictionary<TrainModel, int>();
-
+        public string Port = "3306";
         public int CurrentUserId { get; }
         public bool RememberMe { get; }
 
         // Paraméter nélküli konstruktor
         public Form_vezetes() : this(0, false) { }
-
+        
         // Fő konstruktor, inicializálja a formot és betölti a vonatokat
         public Form_vezetes(int userId, bool rememberMe)
         {
@@ -51,6 +52,9 @@ namespace minitrains
             }
 
             UDP_responses.OnResponseReceived += HandleUdpResponse;
+            StreamReader sr = new StreamReader("port.txt");
+            Port = sr.ReadLine();
+
         }
 
         /// <summary>
@@ -342,7 +346,7 @@ namespace minitrains
 
                 decimal szam = kisAblak.NumericErtek;
                 string szoveg = kisAblak.TextErtek;
-                string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
+                string connStr = $"Server=localhost;Database=modellvasut;user=root;password=;port={Port}";
 
                 try
                 {
@@ -532,10 +536,11 @@ namespace minitrains
 
         private void button7_Click(object sender, EventArgs e)
         {
-            UDP_commands resp = new UDP_commands(_z21ip,_z21port);
-            resp.StartListening(_z21ip,_z21port);
-
-             UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
+            
+            var udpClient = new UdpClient(_z21port); // ugyanaz a port, mint amit a szerver vár
+            var responses = new UDP_responses(udpClient, _z21ip, _z21port);
+            responses.StartListening(_z21ip,_z21port);
+            UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
             cmd.Logon();
             cmd.Setup();
         }
