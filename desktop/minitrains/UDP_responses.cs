@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -32,17 +33,19 @@ namespace minitrains
         public void StartListening(string _z21Ip, int _z21Port)
         {
             _cts = new CancellationTokenSource();
-
-
-            Task.Run(async () =>
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            byte[] result = new byte[1024];
+            Task.Run(() =>
             {
                 while (!_cts.Token.IsCancellationRequested)
                 {
                     try
                     {
-                        var result = await _udpClient.ReceiveAsync();
+
+                        result = _udpClient.Receive(ref sender);
+
                         MessageBox.Show("valami");
-                        InterpretZ21Response(result.Buffer);
+                        InterpretZ21Response(result);
 
                     }
                     catch (ObjectDisposedException)

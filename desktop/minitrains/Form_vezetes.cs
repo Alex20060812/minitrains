@@ -27,6 +27,7 @@ namespace minitrains
         public string Port = "3306";
         public int CurrentUserId { get; }
         public bool RememberMe { get; }
+        public bool kep { get; set; }
 
         // Paraméter nélküli konstruktor
         public Form_vezetes() : this(0, false) { }
@@ -54,6 +55,8 @@ namespace minitrains
             UDP_responses.OnResponseReceived += HandleUdpResponse;
             StreamReader sr = new StreamReader("port.txt");
             Port = sr.ReadLine();
+            pictureBox1.Image = Image.FromFile("3463.png");
+            kep = false;
 
         }
 
@@ -547,8 +550,25 @@ namespace minitrains
 
         private void label7_Click(object sender, EventArgs e)
         {
+            
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
             UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
-            cmd.Track_ON();
+            if (!kep)
+            {
+                pictureBox1.Image = Image.FromFile("756895.png");
+                
+                cmd.Track_ON();
+
+            }
+            else
+            { 
+                pictureBox1.Image = Image.FromFile("3463.png");
+                
+                cmd.Track_OFF();
+            }
         }
     }
 }
