@@ -1,16 +1,13 @@
-Ôªøusing MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using Z21;
 
 namespace minitrains
 {
     public partial class Form_vezetes : Form
     {
-        // Bels≈ë, adatb√°zis-alap√∫ vonatmodell
+        
         private class TrainModel
         {
             public int Id { get; set; }
@@ -22,73 +19,43 @@ namespace minitrains
             public override string ToString() => Name;
         }
 
-        private readonly List<Button> functionButtons = new List<Button>();
+        
         private readonly Dictionary<TrainModel, int> trainDbMap = new Dictionary<TrainModel, int>();
-        public string Port = "3306";
+        
         public int CurrentUserId { get; }
         public bool RememberMe { get; }
-        public bool kep { get; set; }
+       
 
-        // Param√©ter n√©lk√ºli konstruktor
-        public Form_vezetes() : this(0, false) { }
+        // ParamÈter nÈlk¸li konstruktor
         
-        // F≈ë konstruktor, inicializ√°lja a formot √©s bet√∂lti a vonatokat
+
+        // Fı konstruktor, inicializ·lja a formot Ès betˆlti a vonatokat
         public Form_vezetes(int userId, bool rememberMe)
         {
             InitializeComponent();
             CurrentUserId = userId;
             RememberMe = rememberMe;
 
-            checkBox1.Visible = RememberMe;
-            checkBox1.Checked = RememberMe;
+            checkBox_login.Visible = RememberMe;
+            checkBox_login.Checked = RememberMe;
 
-            InitFunctionButtons();
             LoadUserTrains();
 
-            if (comboBox1.Items.Count == 0)
+            if (comboBox_vonatvalasztas.Items.Count == 0)
             {
-                comboBox1.DisplayMember = "Name";
-                if (comboBox1.Items.Count > 0) comboBox1.SelectedIndex = 0;
-                RefreshFunctionButtons(SelectedTrain());
+                comboBox_vonatvalasztas.DisplayMember = "Name";
+                if (comboBox_vonatvalasztas.Items.Count > 0) comboBox_vonatvalasztas.SelectedIndex = 0;
+                
             }
 
-            UDP_responses.OnResponseReceived += HandleUdpResponse;
-            StreamReader sr = new StreamReader("port.txt");
-            Port = sr.ReadLine();
-            pictureBox1.Image = Image.FromFile("3463.png");
-            kep = false;
-
+            
+            
+            
+            BackgroundImage = Image.FromFile("..//..//Pictures//20250502-IMG_1315.jpg");
         }
 
         /// <summary>
-        /// L√©trehozza √©s inicializ√°lja a funkci√≥gombokat a fel√ºleten.
-        /// </summary>
-        private void InitFunctionButtons()
-        {
-            for (int i = 0; i < 29; i++)
-            {
-                int idx = i;
-                Button btn = new Button
-                {
-                    Text = $"F{idx}",
-                    Size = new Size(Math.Max(24, flowLayoutPanel1.Width / 7), Math.Max(40, flowLayoutPanel1.Height / 6)),
-                    Name = idx.ToString(),
-                    Tag = idx,
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = Color.DimGray,
-                    ForeColor = Color.White,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    ImageAlign = ContentAlignment.MiddleCenter
-                };
-
-                btn.Click += (s, e) => ToggleFunctionButton(btn, idx);
-                flowLayoutPanel1.Controls.Add(btn);
-                functionButtons.Add(btn);
-            }
-        }
-
-        /// <summary>
-        /// Funkci√≥gomb √°llapot√°nak √°tv√°lt√°sa a kiv√°lasztott vonathoz.
+        /// FunkciÛgomb ·llapot·nak ·tv·lt·sa a kiv·lasztott vonathoz.
         /// </summary>
         private void ToggleFunctionButton(Button btn, int idx)
         {
@@ -107,7 +74,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Bet√∂lti a felhaszn√°l√≥hoz tartoz√≥ vonatokat az adatb√°zisb√≥l.
+        /// Betˆlti a felhaszn·lÛhoz tartozÛ vonatokat az adatb·zisbÛl.
         /// </summary>
         private void LoadUserTrains()
         {
@@ -126,8 +93,8 @@ namespace minitrains
 
                     using (var reader = cmd.ExecuteReader())
                     {
-                        comboBox1.Items.Clear();
-                        comboBox1.DisplayMember = "Name";
+                        comboBox_vonatvalasztas.Items.Clear();
+                        comboBox_vonatvalasztas.DisplayMember = "Name";
                         trainDbMap.Clear();
 
                         while (reader.Read())
@@ -137,26 +104,26 @@ namespace minitrains
                             int address = reader.IsDBNull(reader.GetOrdinal("dcc_address")) ? 0 : reader.GetInt32("dcc_address");
 
                             var t = new TrainModel { Id = id, Name = name, Address = address, Speed = 0, Direction = true };
-                            comboBox1.Items.Add(t);
+                            comboBox_vonatvalasztas.Items.Add(t);
                             trainDbMap[t] = id;
                         }
                     }
                 }
 
-                if (comboBox1.Items.Count > 0)
+                if (comboBox_vonatvalasztas.Items.Count > 0)
                 {
-                    comboBox1.SelectedIndex = 0;
+                    comboBox_vonatvalasztas.SelectedIndex = 0;
                     LoadFunctionsForTrain(SelectedTrain());
                 }
             }
             catch
             {
-                // DB hib√°k figyelmen k√≠v√ºl hagy√°sa
+                // DB hib·k figyelmen kÌv¸l hagy·sa
             }
         }
 
         /// <summary>
-        /// Bet√∂lti a kiv√°lasztott vonathoz tartoz√≥ funkci√≥kat az adatb√°zisb√≥l.
+        /// Betˆlti a kiv·lasztott vonathoz tartozÛ funkciÛkat az adatb·zisbÛl.
         /// </summary>
         private void LoadFunctionsForTrain(TrainModel sel)
         {
@@ -183,11 +150,7 @@ namespace minitrains
 
                     using (var reader = cmd.ExecuteReader())
                     {
-                        foreach (var btn in functionButtons)
-                        {
-                            btn.Visible = true;
-                            btn.Text = $"F{btn.Tag}";
-                        }
+                        
 
                         while (reader.Read())
                         {
@@ -197,13 +160,8 @@ namespace minitrains
                             bool hidden = !reader.IsDBNull(reader.GetOrdinal("hidden")) && reader.GetInt32("hidden") == 1;
                             bool defaultState = !reader.IsDBNull(reader.GetOrdinal("default_state")) && reader.GetInt32("default_state") == 1;
 
-                            var btn = functionButtons.Find(b => (b.Tag as int?) == number);
-                            if (btn != null)
-                            {
-                                btn.Visible = !hidden;
-                                if (!string.IsNullOrEmpty(customName)) btn.Text = customName;
-                                else if (!string.IsNullOrEmpty(defaultName)) btn.Text = defaultName;
-                            }
+                            
+                            
 
                             if (defaultState)
                             {
@@ -211,28 +169,28 @@ namespace minitrains
                             }
                         }
 
-                        RefreshFunctionButtons(sel);
+                        
                     }
                 }
             }
             catch
             {
-                // DB hib√°k figyelmen k√≠v√ºl hagy√°sa
+                // DB hib·k figyelmen kÌv¸l hagy·sa
             }
         }
 
         /// <summary>
-        /// Friss√≠ti a sebess√©g kijelz≈ët a kiv√°lasztott vonat alapj√°n.
+        /// FrissÌti a sebessÈg kijelzıt a kiv·lasztott vonat alapj·n.
         /// </summary>
         private void UpdateSpeedLabel()
         {
             var sel = SelectedTrain();
             double sebesseg = Math.Round(sel.Speed * 4.1);
-            label1.Text = "Sebess√©g: " + sebesseg.ToString() + " km/h";
+            label1.Text = "SebessÈg: " + sebesseg.ToString() + " km/h";
         }
 
         /// <summary>
-        /// Friss√≠ti egy gomb sz√≠n√©t az akt√≠v √°llapot alapj√°n.
+        /// FrissÌti egy gomb szÌnÈt az aktÌv ·llapot alapj·n.
         /// </summary>
         private void UpdateButtonState(Button btn, bool aktiv)
         {
@@ -240,24 +198,12 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Friss√≠ti az √∂sszes funkci√≥gomb √°llapot√°t a kiv√°lasztott vonat alapj√°n.
+        /// FrissÌti az ˆsszes funkciÛgomb ·llapot·t a kiv·lasztott vonat alapj·n.
         /// </summary>
-        private void RefreshFunctionButtons(TrainModel sel)
-        {
-            if (sel == null) return;
-
-            foreach (var btn in functionButtons)
-            {
-                if (btn.Tag is int idx)
-                {
-                    bool active = sel.ActiveFunctions.Contains(idx);
-                    UpdateButtonState(btn, active);
-                }
-            }
-        }
+        
 
         /// <summary>
-        /// N√∂veli a sebess√©get egy egys√©ggel.
+        /// Nˆveli a sebessÈget egy egysÈggel.
         /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
@@ -267,7 +213,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Vissza√°ll√≠tja a sebess√©get null√°ra.
+        /// Vissza·llÌtja a sebessÈget null·ra.
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
@@ -277,7 +223,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Cs√∂kkenti a sebess√©get egy egys√©ggel.
+        /// Csˆkkenti a sebessÈget egy egysÈggel.
         /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
@@ -287,7 +233,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// A sebess√©g cs√∫szka mozgat√°s√°ra friss√≠ti a sebess√©get.
+        /// A sebessÈg cs˙szka mozgat·s·ra frissÌti a sebessÈget.
         /// </summary>
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
@@ -296,43 +242,43 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Vonat kiv√°laszt√°sakor friss√≠ti a kijelz≈ëket √©s bet√∂lti a funkci√≥kat.
+        /// Vonat kiv·laszt·sakor frissÌti a kijelzıket Ès betˆlti a funkciÛkat.
         /// </summary>
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox_vonatvalasztas_SelectedIndexChanged(object sender, EventArgs e)
         {
             var sel = SelectedTrain();
             if (sel == null) return;
-            label3.Text = "C√≠m: " + sel.Address.ToString();
-            label2.Text = "Ir√°ny: " + (sel.Direction ? "El≈ëre" : "H√°tra");
-            label4.Text = "N√©v: " + sel.Name;
-            label1.Text = "Sebess√©g: " + Math.Round(sel.Speed * 4.1).ToString() + " km/h";
+            label3.Text = "CÌm: " + sel.Address.ToString();
+            label2.Text = "Ir·ny: " + (sel.Direction ? "Elıre" : "H·tra");
+            label4.Text = "NÈv: " + sel.Name;
+            label1.Text = "SebessÈg: " + Math.Round(sel.Speed * 4.1).ToString() + " km/h";
             trackBar1.Value = sel.Speed;
 
             LoadFunctionsForTrain(sel);
-            RefreshFunctionButtons(sel);
+            
         }
 
         /// <summary>
-        /// Ir√°nyv√°lt√°s gomb: megford√≠tja a vonat ir√°ny√°t √©s null√°zza a sebess√©get.
+        /// Ir·nyv·lt·s gomb: megfordÌtja a vonat ir·ny·t Ès null·zza a sebessÈget.
         /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             trackBar1.Value = 0;
             SelectedTrain().Direction = !SelectedTrain().Direction;
-            label2.Text = "Ir√°ny: " + (SelectedTrain().Direction ? "El≈ëre" : "H√°tra");
-            label1.Text = "Sebess√©g: 0 km/h";
+            label2.Text = "Ir·ny: " + (SelectedTrain().Direction ? "Elıre" : "H·tra");
+            label1.Text = "SebessÈg: 0 km/h";
         }
 
         /// <summary>
-        /// √öj vonat hozz√°ad√°sa az adatb√°zishoz √©s a fel√ºlethez.
+        /// ⁄j vonat hozz·ad·sa az adatb·zishoz Ès a fel¸lethez.
         /// </summary>
-        private void button5_Click(object sender, EventArgs e)
+        private void button_hozzaad_Click(object sender, EventArgs e)
         {
             AddNewTrain();
         }
 
         /// <summary>
-        /// √öj vonat hozz√°ad√°sa logika k√ºl√∂n met√≥dusba szervezve.
+        /// ⁄j vonat hozz·ad·sa logika k¸lˆn metÛdusba szervezve.
         /// </summary>
         private void AddNewTrain()
         {
@@ -349,7 +295,7 @@ namespace minitrains
 
                 decimal szam = kisAblak.NumericErtek;
                 string szoveg = kisAblak.TextErtek;
-                string connStr = $"Server=localhost;Database=modellvasut;user=root;password=;port={Port}";
+                string connStr = $"Server=localhost;Database=modellvasut;user=root;password=";
 
                 try
                 {
@@ -415,9 +361,9 @@ namespace minitrains
                             tran.Commit();
 
                             var newTrain = new TrainModel { Id = (int)newId, Name = szoveg, Address = (int)szam, Speed = 0, Direction = true };
-                            comboBox1.Items.Add(newTrain);
+                            comboBox_vonatvalasztas.Items.Add(newTrain);
                             trainDbMap[newTrain] = (int)newId;
-                            comboBox1.SelectedItem = newTrain;
+                            comboBox_vonatvalasztas.SelectedItem = newTrain;
                         }
                     }
                 }
@@ -429,7 +375,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Funkci√≥k szerkeszt√©se gomb: megnyitja a szerkeszt≈ë ablakot.
+        /// FunkciÛk szerkesztÈse gomb: megnyitja a szerkesztı ablakot.
         /// </summary>
         private void button6_Click(object sender, EventArgs e)
         {
@@ -451,13 +397,13 @@ namespace minitrains
         }
 
         /// <summary>
-        /// "Remember me" checkbox v√°ltoz√°s√°nak kezel√©se.
+        /// "Remember me" checkbox v·ltoz·s·nak kezelÈse.
         /// </summary>
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_login_CheckedChanged(object sender, EventArgs e)
         {
-            if (!checkBox1.Checked)
+            if (!checkBox_login.Checked)
             {
-                checkBox1.Visible = false;
+                checkBox_login.Visible = false;
                 const string rememberFile = "remember.dat";
                 try
                 {
@@ -481,94 +427,23 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Visszaadja a kiv√°lasztott vonatot, vagy null-t ha nincs.
+        /// Visszaadja a kiv·lasztott vonatot, vagy null-t ha nincs.
         /// </summary>
         private TrainModel SelectedTrain()
         {
-            if (comboBox1?.SelectedItem is TrainModel sel)
+            if (comboBox_vonatvalasztas?.SelectedItem is TrainModel sel)
                 return sel;
 
-            for (int i = 0; comboBox1 != null && i < comboBox1.Items.Count; i++)
+            for (int i = 0; comboBox_vonatvalasztas != null && i < comboBox_vonatvalasztas.Items.Count; i++)
             {
-                if (comboBox1.Items[i] is TrainModel first)
+                if (comboBox_vonatvalasztas.Items[i] is TrainModel first)
                 {
-                    comboBox1.SelectedIndex = i;
+                    comboBox_vonatvalasztas.SelectedIndex = i;
                     return first;
                 }
             }
             return null;
         }
-
-        string _z21ip = "string.Empty";
-        int _z21port = 0;
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            _z21ip = "192.168.0.111";
-            textBox1.Text = _z21ip;
-            _z21port = 21105;
-            textBox2.Text = _z21port.ToString();
-
-            textBox1.Enabled = false;
-            textBox2.Enabled = false;
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            textBox1.Enabled = true;
-            textBox2.Enabled = true;
-
-            _z21ip = textBox1.Text;
-            if (int.TryParse(textBox2.Text, out int port))
-            {
-                _z21port = port;
-            }
-        }
-
-        private void HandleUdpResponse(string message)
-        {
-            // UI friss√≠t√©s a megfelel≈ë sz√°lon
-            if (label7.InvokeRequired)
-            {
-                label7.Invoke(new Action(() => label7.Text = message));
-            }
-            else
-            {
-                label7.Text = message;
-            }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            
-            var udpClient = new UdpClient(_z21port); // ugyanaz a port, mint amit a szerver v√°r
-            var responses = new UDP_responses(udpClient, _z21ip, _z21port);
-            responses.StartListening(_z21ip,_z21port);
-            UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
-            cmd.Logon();
-            cmd.Setup();
-        }
-
-        private void label7_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            UDP_commands cmd = new UDP_commands(_z21ip, _z21port);
-            if (!kep)
-            {
-                pictureBox1.Image = Image.FromFile("756895.png");
-                
-                cmd.Track_ON();
-
-            }
-            else
-            { 
-                pictureBox1.Image = Image.FromFile("3463.png");
-                
-                cmd.Track_OFF();
-            }
-        }
+        
     }
 }

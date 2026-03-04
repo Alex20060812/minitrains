@@ -1,27 +1,29 @@
 ﻿using MySql.Data.MySqlClient;
-using Mysqlx.Crud;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace minitrains
 {
     public partial class Form_login : Form
     {
         private const string RememberFile = "remember.dat";
-        
+
         public int LoggedInUserId { get; private set; }
         public bool RememberMeChecked { get; private set; }
 
-        public int port;
         
+
         public Form_login()
         {
             InitializeComponent();
             StreamReader sr = new StreamReader("port.txt");
-            port = int.Parse(sr.ReadLine());
+            
             this.Shown += new System.EventHandler(this.Form_login_Shown);
 
         }
@@ -31,13 +33,13 @@ namespace minitrains
             // If auto-login succeeds, set DialogResult and close the dialog.
             if (TryAutoLogin())
             {
-                
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
         }
 
-       
+
 
         // ------------------------------- JELSZÓ HASH -------------------------------
         public static string HashPassword(string password)
@@ -106,7 +108,7 @@ namespace minitrains
             string savedUsername = lines[0];
             string savedToken = lines[1];
 
-            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password=;Port={port}"))
+            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password="))
             {
                 conn.Open();
 
@@ -124,7 +126,7 @@ namespace minitrains
                 // Sikeres automatikus belépés!
                 this.LoggedInUserId = Convert.ToInt32(dbId);
                 this.RememberMeChecked = true;
-                
+
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -132,12 +134,12 @@ namespace minitrains
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            
-            button3.Show(); textBox1.Show(); textBox2.Show(); label1.Show(); label2.Show(); checkBoxRememberMe.Show();
+
+            button2.Show(); textBox1.Show(); textBox2.Show(); label1.Show(); label2.Show(); checkBox_RememberMe.Show();
         }
-        private void button3_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             string username = textBox1.Text;
             string password = textBox2.Text;
@@ -148,7 +150,7 @@ namespace minitrains
                 return;
             }
 
-            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password=;Port={port}"))
+            using (var conn = new MySqlConnection($"Server=localhost;Database=modellvasut;user=root;password="))
             {
                 conn.Open();
 
@@ -178,7 +180,7 @@ namespace minitrains
 
                     reader.Close();
 
-                    if (checkBoxRememberMe.Checked)
+                    if (checkBox_RememberMe.Checked)
                     {
                         // Csak akkor generálj és ments token-t, ha be van pipálva!
                         string newToken = GenerateToken();
@@ -208,7 +210,7 @@ namespace minitrains
 
                     // 🔥 Itt tároljuk a felhasználói ID-t a fő programnak!
                     this.LoggedInUserId = userId;
-                    this.RememberMeChecked = checkBoxRememberMe.Checked;
+                    this.RememberMeChecked = checkBox_RememberMe.Checked;
 
                     MessageBox.Show("Sikeres bejelentkezés!");
 
@@ -220,7 +222,7 @@ namespace minitrains
 
         private void Form3_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(this.DialogResult != DialogResult.OK)
+            if (this.DialogResult != DialogResult.OK)
             {
                 Application.Exit();
             }
