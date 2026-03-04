@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniTrains</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <section id="home">
+        <div class="menu">
+            <div class="cim">
+                <h1>Welcome to MiniTrains</h1>
+            </div>
+        </div>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#home">Főoldal</a></li>
+                <li><a href="#download">Letöltés</a></li>
+                <li><a href="#contact">Kapcsolat</a></li>
+            </ul>
+        </nav>
+    </section>
+</header>
+
+<!-- CAROUSEL -->
+<div class="carousel-container">
+    <div class="carousel" id="carousel">
+        <img src="https://www.trains.com/wp-content/uploads/2025/02/CTT-trzoniec-realistic-setting-0225.jpg"
+             alt="Model train realistic landscape" class="carousel-image" loading="lazy">
+        <img src="https://i.ytimg.com/vi/4m8inWO8cgg/sddefault.jpg"
+             alt="HO scale train in snow" class="carousel-image" loading="lazy">
+        <img src="https://cdn11.bigcommerce.com/s-stpzw4awzh/images/stencil/1240x826/uploaded_images/20211114-014209.jpg"
+             alt="Model railway bridge scene" class="carousel-image" loading="lazy">
+        <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg"
+             alt="Detailed model train diorama" class="carousel-image" loading="lazy">
+             <img src="IMG_1305.jpg"
+                  alt="Detailed model train diorama" class="carousel-image" loading="lazy">
+           
+        <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg"
+             alt="Detailed HO scale city scene" class="carousel-image" loading="lazy">
+    </div>
+
+    <button class="carousel-btn prev-btn" id="prevBtn">❮</button>
+    <button class="carousel-btn next-btn" id="nextBtn">❯</button>
+
+    <div class="indicators" id="indicators"></div>
+</div>
+
+<!-- DOWNLOAD -->
+<section id="download">
+    <div class="download-content">
+        <h2>Letöltés</h2>
+        <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
+        <button id="downloadBtn" class="download-button">Letöltés</button>
+        <p id="downloadMessage" style="color: green; display:none;">Fájl letöltése folyamatban...</p>
+    </div>
+</section>
+
+<!-- CONTACT FORM -->
+<section id="contact">
+    <h2>Kapcsolat</h2>
+    <form id="contactForm">
+        <input type="text" id="contactName" placeholder="Név" required>
+        <input type="email" id="contactEmail" placeholder="Email" required>
+        <textarea id="contactMessage" placeholder="Üzenet" required></textarea>
+        <button type="submit">Küldés</button>
+        <p id="formMessage" style="color: green; display:none;">Üzenet elküldve!</p>
+    </form>
+</section>
+
+<script src="index.js"></script>
+</body>
+</html>
