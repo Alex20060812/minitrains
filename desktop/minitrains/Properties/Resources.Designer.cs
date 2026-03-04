@@ -63,19 +63,9 @@ namespace minitrains.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap elso {
+        internal static System.Drawing.Bitmap _20250502_IMG_1315 {
             get {
-                object obj = ResourceManager.GetObject("elso", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap gozos {
-            get {
-                object obj = ResourceManager.GetObject("gozos", resourceCulture);
+                object obj = ResourceManager.GetObject("20250502-IMG_1315", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

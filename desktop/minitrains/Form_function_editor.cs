@@ -1,8 +1,10 @@
-using MySql.Data.MySqlClient;
+Ôªøusing MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace minitrains
@@ -21,7 +23,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Betˆlti az adatb·zisbÛl a vonathoz tartozÛ funkciÛkat a DataGridView-be.
+        /// Bet√∂lti az adatb√°zisb√≥l a vonathoz tartoz√≥ funkci√≥kat a DataGridView-be.
         /// </summary>
         private void LoadFunctions()
         {
@@ -49,7 +51,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// LÈtrehozza az SQL parancsot a funkciÛk lekÈrdezÈsÈhez.
+        /// L√©trehozza az SQL parancsot a funkci√≥k lek√©rdez√©s√©hez.
         /// </summary>
         private MySqlCommand CreateLoadFunctionsCommand(MySqlConnection conn)
         {
@@ -72,7 +74,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Hozz·ad egy sort a DataGridView-hez az adatb·zisbÛl olvasott funkciÛ alapj·n.
+        /// Hozz√°ad egy sort a DataGridView-hez az adatb√°zisb√≥l olvasott funkci√≥ alapj√°n.
         /// </summary>
         private void AddFunctionRow(IDataRecord r)
         {
@@ -101,7 +103,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Be·llÌtja az ikon cell·t a megadott f·jlnÈv alapj·n.
+        /// Be√°ll√≠tja az ikon cell√°t a megadott f√°jln√©v alapj√°n.
         /// </summary>
         private void SetIconCell(DataGridViewRow row, string iconFile)
         {
@@ -121,7 +123,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Elmenti a mÛdosÌt·sokat az adatb·zisba.
+        /// Elmenti a m√≥dos√≠t√°sokat az adatb√°zisba.
         /// </summary>
         private void buttonSave_Click(object sender, EventArgs e)
         {
@@ -146,7 +148,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Elment egy sort (funkciÛt) az adatb·zisba.
+        /// Elment egy sort (funkci√≥t) az adatb√°zisba.
         /// </summary>
         private void SaveFunctionRow(MySqlConnection conn, DataGridViewRow row)
         {
@@ -162,7 +164,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// FrissÌti a functions t·bl·t (hidden, icon mezık).
+        /// Friss√≠ti a functions t√°bl√°t (hidden, icon mez≈ëk).
         /// </summary>
         private void UpdateFunction(MySqlConnection conn, int functionId, bool visible, string iconFile)
         {
@@ -176,7 +178,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Besz˙rja vagy frissÌti a functions_settings sort.
+        /// Besz√∫rja vagy friss√≠ti a functions_settings sort.
         /// </summary>
         private void UpsertFunctionSettings(MySqlConnection conn, int functionId, string name, bool defaultState)
         {
@@ -213,7 +215,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// MÈgse gomb esemÈnykezelıje.
+        /// M√©gse gomb esem√©nykezel≈ëje.
         /// </summary>
         private void buttonCancel_Click(object sender, EventArgs e)
         {
@@ -222,7 +224,7 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Ikon cell·ra kattint·s esetÈn lehetısÈget ad ˙j ikon kiv·laszt·s·ra.
+        /// Ikon cell√°ra kattint√°s eset√©n lehet≈ës√©get ad √∫j ikon kiv√°laszt√°s√°ra.
         /// </summary>
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {

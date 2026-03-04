@@ -1,26 +1,20 @@
-﻿using System;
-using System.Windows.Forms;
-
 namespace minitrains
 {
     internal static class Program
     {
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            // Show login first; only open main form when login returns OK.
-            using (var login = new Form_login())
-            {
-                var result = login.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    Application.Run(new Form_vezetes(login.LoggedInUserId, login.RememberMeChecked));
-                }
-                // otherwise exit — do not open Form_vezetes
-            }
+            // To customize application configuration such as set high DPI settings or default font,
+            // see https://aka.ms/applicationconfiguration.
+            ApplicationConfiguration.Initialize();
+            // Provide required arguments for Form_vezetes constructor
+            int userId = 0; // Replace with actual user id as needed
+            bool rememberMe = false; // Replace with actual value as needed
+            Application.Run(new Form_vezetes(userId, rememberMe));
         }
     }
 }

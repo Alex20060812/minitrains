@@ -29,127 +29,108 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_login));
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.checkBoxRememberMe = new System.Windows.Forms.CheckBox();
-            this.SuspendLayout();
+            button1 = new Button();
+            textBox1 = new TextBox();
+            textBox2 = new TextBox();
+            button2 = new Button();
+            label1 = new Label();
+            label2 = new Label();
+            checkBox_RememberMe = new CheckBox();
+            SuspendLayout();
             // 
-            // button2
+            // button1
             // 
-            this.button2.AccessibleRole = System.Windows.Forms.AccessibleRole.Indicator;
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(41, 669);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(102, 66);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Bejelentkezés";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button1.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            button1.Location = new Point(12, 234);
+            button1.Name = "button1";
+            button1.Size = new Size(100, 100);
+            button1.TabIndex = 0;
+            button1.Text = "Bejelentkezés";
+            button1.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(386, 646);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(153, 20);
-            this.textBox1.TabIndex = 2;
-            this.textBox1.Visible = false;
+            textBox1.Location = new Point(168, 360);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(127, 23);
+            textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(386, 693);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(153, 20);
-            this.textBox2.TabIndex = 3;
-            this.textBox2.Visible = false;
+            textBox2.Location = new Point(168, 413);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(127, 23);
+            textBox2.TabIndex = 2;
+            // 
+            // button2
+            // 
+            button2.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
+            button2.Location = new Point(341, 408);
+            button2.Name = "button2";
+            button2.Size = new Size(80, 30);
+            button2.TabIndex = 3;
+            button2.Text = "OK";
+            button2.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Bahnschrift", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(220, 633);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(144, 33);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Username:";
-            this.label1.Visible = false;
+            label1.AutoSize = true;
+            label1.BackColor = SystemColors.Control;
+            label1.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
+            label1.Location = new Point(49, 363);
+            label1.Name = "label1";
+            label1.Size = new Size(113, 18);
+            label1.TabIndex = 4;
+            label1.Text = "Felhasználónév:";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("Bahnschrift", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(220, 680);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(142, 33);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Password:";
-            this.label2.Visible = false;
+            label2.AutoSize = true;
+            label2.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
+            label2.Location = new Point(49, 413);
+            label2.Name = "label2";
+            label2.Size = new Size(54, 18);
+            label2.TabIndex = 5;
+            label2.Text = "Jelszó:";
             // 
-            // button3
+            // checkBox_RememberMe
             // 
-            this.button3.Location = new System.Drawing.Point(620, 669);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "OK";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Visible = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // checkBoxRememberMe
-            // 
-            this.checkBoxRememberMe.AutoSize = true;
-            this.checkBoxRememberMe.BackColor = System.Drawing.Color.Transparent;
-            this.checkBoxRememberMe.Font = new System.Drawing.Font("Bahnschrift", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.checkBoxRememberMe.ForeColor = System.Drawing.Color.White;
-            this.checkBoxRememberMe.Location = new System.Drawing.Point(386, 719);
-            this.checkBoxRememberMe.Name = "checkBoxRememberMe";
-            this.checkBoxRememberMe.Size = new System.Drawing.Size(230, 37);
-            this.checkBoxRememberMe.TabIndex = 7;
-            this.checkBoxRememberMe.Text = "Jegyezzen meg?";
-            this.checkBoxRememberMe.UseVisualStyleBackColor = false;
-            this.checkBoxRememberMe.Visible = false;
+            checkBox_RememberMe.AutoSize = true;
+            checkBox_RememberMe.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
+            checkBox_RememberMe.Location = new Point(341, 363);
+            checkBox_RememberMe.Name = "checkBox_RememberMe";
+            checkBox_RememberMe.Size = new Size(129, 20);
+            checkBox_RememberMe.TabIndex = 6;
+            checkBox_RememberMe.Text = "Emlékezzen rám?";
+            checkBox_RememberMe.UseVisualStyleBackColor = true;
             // 
             // Form_login
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(784, 761);
-            this.Controls.Add(this.checkBoxRememberMe);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button2);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.Name = "Form_login";
-            this.ShowIcon = false;
-            this.Text = "Form3";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form3_FormClosing);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(484, 461);
+            Controls.Add(checkBox_RememberMe);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(button2);
+            Controls.Add(textBox2);
+            Controls.Add(textBox1);
+            Controls.Add(button1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "Form_login";
+            Text = "Bejelentkezés";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.CheckBox checkBoxRememberMe;
+
+        private Button button1;
+        private TextBox textBox1;
+        private TextBox textBox2;
+        private Button button2;
+        private Label label1;
+        private Label label2;
+        private CheckBox checkBox_RememberMe;
     }
 }
