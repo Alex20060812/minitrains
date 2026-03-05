@@ -247,3 +247,47 @@ class ImageCarousel {
                 }
             });
     });
+    export function initCarousel() {
+  const carousel = document.getElementById("carousel");
+  const images = Array.from(carousel.querySelectorAll("img"));
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const indicators = document.getElementById("indicators");
+
+  if (!carousel || images.length === 0) return;
+
+  let index = 0;
+
+  // Indikátorok
+  indicators.innerHTML = "";
+  const dots = images.map((_, i) => {
+    const dot = document.createElement("button");
+    dot.className = "dot";
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Kép ${i + 1}`);
+    dot.addEventListener("click", () => {
+      index = i;
+      update();
+    });
+    indicators.appendChild(dot);
+    return dot;
+  });
+
+  function update() {
+    carousel.style.transform = `translateX(${-index * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle("active", i === index));
+  }
+
+  prevBtn?.addEventListener("click", () => {
+    index = (index - 1 + images.length) % images.length;
+    update();
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    index = (index + 1) % images.length;
+    update();
+  });
+
+  // indulás
+  update();
+}

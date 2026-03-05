@@ -1,114 +1,136 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniTrains</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniTrains</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="./index.js"></script>
+
+
 </head>
 
 <body>
-
 <header>
-    <section id="home">
-        <div class="menu">
-            <div class="cim">
-                <h1>Welcome to MiniTrains</h1>
-            </div>
-        </div>
+  <section id="home">
+    <div class="menu">
+      <div class="cim">
+        <h1>Welcome to MiniTrains</h1>
+      </div>
+    </div>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#home">Főoldal</a></li>
-                <li><a href="#download">Letöltés</a></li>
-                <li><a href="#contact">Kapcsolat</a></li>
-            </ul>
-            <!-- Bejelentkezés / Regisztráció gombok a navba -->
-            <button id="loginBtn">Bejelentkezés</button>
-            <button id="registerBtn">Regisztráció</button>
-            <button id="logoutBtn" style="display:none;">Kijelentkezés</button>
-        </nav>
-    </section>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#home">Főoldal</a></li>
+        <li><a href="#download">Letöltés</a></li>
+        <li><a href="#contact">Kapcsolat</a></li>
+        <li><a href="#trains">Vonatok</a></li>
+      </ul>
+
+      <div class="auth-buttons">
+        <button id="loginBtn">Bejelentkezés</button>
+        <button id="registerBtn">Regisztráció</button>
+        <button id="logoutBtn" style="display:none;">Kijelentkezés</button>
+      </div>
+    </nav>
+  </section>
 </header>
 
 <!-- CAROUSEL -->
 <div class="carousel-container">
-    <div class="carousel" id="carousel">
-        <img src="https://www.trains.com/wp-content/uploads/2025/02/CTT-trzoniec-realistic-setting-0225.jpg"
-             alt="Model train realistic landscape" class="carousel-image" loading="lazy">
-        <img src="https://i.ytimg.com/vi/4m8inWO8cgg/sddefault.jpg"
-             alt="HO scale train in snow" class="carousel-image" loading="lazy">
-        <img src="https://cdn11.bigcommerce.com/s-stpzw4awzh/images/stencil/1240x826/uploaded_images/20211114-014209.jpg"
-             alt="Model railway bridge scene" class="carousel-image" loading="lazy">
-        <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg"
-             alt="Detailed model train diorama" class="carousel-image" loading="lazy">
-        <img src="IMG_1305.jpg"
-             alt="Detailed model train diorama" class="carousel-image" loading="lazy">
-        <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg"
-             alt="Detailed HO scale city scene" class="carousel-image" loading="lazy">
-    </div>
+  <div class="carousel" id="carousel">
+    <img src="https://www.trains.com/wp-content/uploads/2025/02/CTT-trzoniec-realistic-setting-0225.jpg" alt="Model train realistic landscape" class="carousel-image" loading="lazy">
+    <img src="https://i.ytimg.com/vi/4m8inWO8cgg/sddefault.jpg" alt="HO scale train in snow" class="carousel-image" loading="lazy">
+    <img src="https://cdn11.bigcommerce.com/s-stpzw4awzh/images/stencil/1240x826/uploaded_images/20211114-014209.jpg" alt="Model railway bridge scene" class="carousel-image" loading="lazy">
+    <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg" alt="Detailed model train diorama" class="carousel-image" loading="lazy">
+    <img src="IMG_1305.jpg" alt="Saját kép" class="carousel-image" loading="lazy">
+    <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg" alt="Detailed HO scale city scene" class="carousel-image" loading="lazy">
+  </div>
 
-    <button class="carousel-btn prev-btn" id="prevBtn">❮</button>
-    <button class="carousel-btn next-btn" id="nextBtn">❯</button>
+  <button class="carousel-btn prev-btn" id="prevBtn" aria-label="Előző">❮</button>
+  <button class="carousel-btn next-btn" id="nextBtn" aria-label="Következő">❯</button>
 
-    <div class="indicators" id="indicators"></div>
+  <div class="indicators" id="indicators"></div>
 </div>
 
 <main>
-    <!-- Felhasználói információ és űrlapok -->
-    <section id="userInfo" style="display:none;">
-        <p>Üdv, <span id="usernameDisplay"></span>!</p>
-    </section>
+  <!-- Felhasználói információ és űrlapok -->
+  <section id="userInfo" style="display:none;">
+    <p>Üdv, <span id="usernameDisplay"></span>!</p>
+  </section>
 
-    <section id="loginForm" style="display:none;">
-        <h2>Bejelentkezés</h2>
-        <form>
-            <input type="text" id="loginUsername" placeholder="Felhasználónév" required>
-            <input type="password" id="loginPassword" placeholder="Jelszó" required>
-            <button type="submit">Bejelentkezés</button>
-        </form>
-        <p id="loginError" class="error"></p>
-    </section>
+  <section id="loginForm" class="card" style="display:none;">
+    <h2>Bejelentkezés</h2>
+    <form>
+      <input type="text" id="loginUsername" placeholder="Felhasználónév" required />
+      <input type="password" id="loginPassword" placeholder="Jelszó" required />
+      <button type="submit">Bejelentkezés</button>
+    </form>
+    <p id="loginError" class="error"></p>
+  </section>
 
-    <section id="registerForm" style="display:none;">
-        <h2>Regisztráció</h2>
-        <form>
-            <input type="text" id="registerUsername" placeholder="Felhasználónév" required>
-            <input type="password" id="registerPassword" placeholder="Jelszó" required>
-            <button type="submit">Regisztráció</button>
-        </form>
-        <p id="registerError" class="error"></p>
-    </section>
+  <section id="registerForm" class="card" style="display:none;">
+    <h2>Regisztráció</h2>
+    <form>
+      <input type="text" id="registerUsername" placeholder="Felhasználónév" required />
+      <input type="password" id="registerPassword" placeholder="Jelszó" required />
+      <button type="submit">Regisztráció</button>
+    </form>
+    <p id="registerError" class="error"></p>
+  </section>
 
-    <!-- Régi tartalom -->
-    <section id="existingContent">
-        <!-- Ide kerül a korábbi oldalad egyéb tartalma -->
-    </section>
+  <!-- VONATOK (lista + űrlap, GET + POST) -->
+  <section id="trains" class="card" style="display:none;">
+    <h2>Vonatok</h2>
+    <p class="hint">Bejelentkezés után jelenik meg. (GET + POST)</p>
+
+    <ul id="trainList" class="list"></ul>
+
+    <h3>Új vonat</h3>
+    <form id="trainForm">
+      <input type="text" id="trainName" placeholder="Vonat neve" required />
+      <button type="submit">Hozzáadás</button>
+    </form>
+
+    <p id="trainMessage" class="ok" style="display:none;"></p>
+    <p id="trainError" class="error"></p>
+  </section>
+
 </main>
 
 <!-- DOWNLOAD -->
-<section id="download">
-    <div class="download-content">
-        <h2>Letöltés</h2>
-        <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
-        <button id="downloadBtn" class="download-button">Letöltés</button>
-        <p id="downloadMessage" style="color: green; display:none;">Fájl letöltése folyamatban...</p>
-    </div>
+<section id="download" class="card">
+  <div class="download-content">
+    <h2>Letöltés</h2>
+    <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
+
+    <button id="downloadBtn" class="download-button">Letöltés</button>
+    <p id="downloadMessage" class="ok" style="display:none;"></p>
+
+    <h3>Elérhető letöltések</h3>
+    <ul id="downloadList" class="list"></ul>
+  </div>
 </section>
 
-<!-- CONTACT FORM -->
-<section id="contact">
-    <h2>Kapcsolat</h2>
-    <form id="contactForm">
-        <input type="text" id="contactName" placeholder="Név" required>
-        <input type="email" id="contactEmail" placeholder="Email" required>
-        <textarea id="contactMessage" placeholder="Üzenet" required></textarea>
-        <button type="submit">Küldés</button>
-        <p id="formMessage" style="color: green; display:none;">Üzenet elküldve!</p>
-    </form>
+<!-- CONTACT FORM (POST) + lista (GET) -->
+<section id="contact" class="card">
+  <h2>Kapcsolat</h2>
+
+  <form id="contactForm">
+    <input type="text" id="contactName" placeholder="Név" required />
+    <input type="email" id="contactEmail" placeholder="Email" required />
+    <textarea id="contactMessage" placeholder="Üzenet" required></textarea>
+    <button type="submit">Küldés</button>
+    <p id="formMessage" class="ok" style="display:none;">Üzenet elküldve!</p>
+    <p id="contactError" class="error"></p>
+  </form>
+
+  <h3>Beérkezett üzenetek (GET)</h3>
+  <ul id="contactList" class="list"></ul>
 </section>
 
-<script src="script.js"></script>
-<script src="index.js"></script>
+<!-- CSAK EZ KELL -->
+<script type="module" src="./app.js"></script>
+
 </body>
 </html>
