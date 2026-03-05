@@ -100,7 +100,7 @@ modellvasut
 6. Tallózzuk be a projektben található SQL fájlt:
 
 ```
-database/database.sql
+database/modellvasut.sql
 ```
 
 7. Futtassuk az importot
@@ -116,7 +116,7 @@ database/database.sql
 Desktop
 ```
 
-3. Nyissuk meg a megoldás fájlt:
+3. Nyissuk meg a projekt fájlt:
 
 ```
 minitrains.slnx
@@ -170,6 +170,7 @@ Felhasználói fiókok adatai.
 |------|------|------|
 | id | int(11) | Elsődleges kulcs |
 | username | varchar(50) | Felhasználónév |
+| email | varchar(255) | Email |
 | password_hash | varchar(255) | Jelszó hash |
 | remember_token | varchar(255) | Bejelentkezési token |
 
