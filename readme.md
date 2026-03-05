@@ -258,7 +258,7 @@ npm start
 ```
 
 ---
-## 🖥️) Frontend indítása
+## 🌐) Frontend indítása
 
 - Nyissuk meg a minitrains mappát Visual Studio Code-ban.
 
