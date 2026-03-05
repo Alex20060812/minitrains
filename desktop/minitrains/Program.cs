@@ -12,17 +12,17 @@ namespace minitrains
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            MessageBox.Show("apad");
+            
 
             using (var loginForm = new Form_login())
             {
                 var result = loginForm.ShowDialog();
-                MessageBox.Show("Login form closed with result: " + result, "DEBUG");
+                
 
 
                 if (result == DialogResult.OK)
                 {
-                    MessageBox.Show("run form");
+                    
                     Application.Run(
                         new Form_vezetes(
                             loginForm.CurrentUserId,

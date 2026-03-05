@@ -23,32 +23,31 @@ namespace minitrains
             public override string ToString() => Name;
         }
 
-        // CSAK Dictionary – nincs külön lista
         private readonly Dictionary<TrainModel, int> trainDbMap = new Dictionary<TrainModel, int>();
 
         public int CurrentUserId { get; }
         public bool RememberMe { get; }
         private Z21Udp z21 = new Z21Udp();
         private Button[] functionButtons;
-       //public Form_vezetes() : this(0, false) { MessageBox.Show("#-1"); }
+       
 
         public Form_vezetes(int userId, bool rememberMe)
         {
-            // MessageBox.Show("#0");
+            
             InitializeComponent();
 
             CurrentUserId = userId;
-            // MessageBox.Show("#1");
+            
             RememberMe = rememberMe;
 
             try
             {
 
-                // MessageBox.Show("#2");
+                
                 pictureBox1.Image = Image.FromFile("..//..//..//Pictures//play.png");
-                // MessageBox.Show("#3");
+                
 
-                // MessageBox.Show("#4");
+                
                 z21.OnTrackPowerChanged += state =>
                 {
                     if (state)
@@ -56,7 +55,7 @@ namespace minitrains
                     else
                         pictureBox1.Image = Image.FromFile("..//..//..//Pictures//pause.png");
                 };
-                MessageBox.Show("#5");
+                
             }
             catch (Exception ex)
             {
@@ -70,11 +69,11 @@ namespace minitrains
             catch (Exception ex)
             {
 
-                MessageBox.Show("hibe" + ex.Message);
+                MessageBox.Show("hiba" + ex.Message);
             }
 
-            /* ÚJ: kapcsolat állapot esemény kezelése
-            //z21.OnConnectionStateChanged += connected =>
+
+            z21.OnConnectionStateChanged += connected =>
             {
                 if (IsDisposed || !IsHandleCreated) return;
                 BeginInvoke(new Action(() =>
@@ -87,19 +86,21 @@ namespace minitrains
                     {
                         label9.Text = "a kapcsolat megszakadt!";
                     }
-                }));*/
+                }));
+            };
+            
         }
 
 
         private void Form_vezetes_Load(object? sender, EventArgs e)
         {
-            MessageBox.Show("Form betöltve, most jön a kapcsolat");
+            
 
             try
             {
-                MessageBox.Show("begin z21");
+                
                 z21.Connect("192.168.0.111", int.Parse("21105"));
-                MessageBox.Show("IGENNN");
+                
             }
             catch (Exception ex)
             {
@@ -121,11 +122,11 @@ namespace minitrains
                         comboBox_vonatvalasztas.SelectedIndex = 0;
                 }
 
-                /*try
+                try
                 {
                     BackgroundImage = Image.FromFile("..//..//..//Pictures//20250502-IMG_1315.jpg");
                 }
-                catch { MessageBox.Show("a"); }*/
+                catch { MessageBox.Show("a"); }
 
                 
 
@@ -158,7 +159,7 @@ namespace minitrains
             }
 
 
-            // gomb szín frissítése
+            
             var btn = functionButtons[fnNumber];
             btn.BackColor = isActive ? Color.Gray : Color.Yellow;
 
@@ -178,47 +179,97 @@ namespace minitrains
             {
                 using (var conn = new MySqlConnection(connStr))
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
                     var cmd = new MySqlCommand(
-                        "SELECT t.id,t.name,td.dcc_address FROM trains t LEFT JOIN train_details td ON td.train_id=t.id WHERE t.user_id=@uid",
+                        "SELECT t.id,t.name,td.dcc_address FROM trains t " +
+                        "LEFT JOIN train_details td ON td.train_id=t.id " +
+                        "WHERE t.user_id=@uid",
                         conn);
                     cmd.Parameters.AddWithValue("@uid", CurrentUserId);
 
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         comboBox_vonatvalasztas.Items.Clear();
                         comboBox_vonatvalasztas.DisplayMember = "Name";
                         trainDbMap.Clear();
 
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
-                            int id = reader.GetInt32("id");
-                            string name = reader.IsDBNull(reader.GetOrdinal("name")) ? "Unnamed" : reader.GetString("name");
-                            int address = reader.IsDBNull(reader.GetOrdinal("dcc_address")) ? 0 : reader.GetInt32("dcc_address");
+                            int id = reader.GetInt32(reader.GetOrdinal("id"));
+                            string name = reader.IsDBNull(reader.GetOrdinal("name"))
+                                ? "Unnamed"
+                                : reader.GetString(reader.GetOrdinal("name"));
+                            int address = reader.IsDBNull(reader.GetOrdinal("dcc_address"))
+                                ? 0
+                                : reader.GetInt32(reader.GetOrdinal("dcc_address"));
 
-                            var t = new TrainModel { Id = id, Name = name, Address = address, Speed = 0, Direction = true };
+                            var t = new TrainModel
+                            {
+                                Id = id,
+                                Name = name,
+                                Address = address,
+                                Speed = 0,
+                                Direction = true
+                            };
+
                             comboBox_vonatvalasztas.Items.Add(t);
                             trainDbMap[t] = id;
                         }
                     }
                 }
 
-                if (comboBox_vonatvalasztas.Items.Count > 0)
+                
+
+                //minden vonatra betöltjük a funkciókat DB-ből
+                foreach (var kvp in trainDbMap)
                 {
-                    comboBox_vonatvalasztas.SelectedIndex = 0;
-                    //LoadFunctionsForTrain(SelectedTrain());
+                    var train = kvp.Key;
+                    LoadFunctionsForTrain(train);
                 }
+
+                //minden vonatra bekapcsoljuk az alapértelmezett funkciókat
+                TurnOnDefaultFunctionsForAllTrains();
             }
             catch
             {
                 // DB hibák figyelmen kívül hagyása
             }
         }
+        /// <summary>
+        /// Alkalmazás indításakor minden mozdonyon bekapcsolja
+        /// az alapértelmezetten bekapcsolt funkciókat (ActiveFunctions).
+        /// </summary>
+        private void TurnOnDefaultFunctionsForAllTrains()
+        {
+            // z21-nek csatlakozva kell lennie
+            if (z21 == null || !z21.IsConnected)
+                return;
 
+            foreach (var kvp in trainDbMap)
+            {
+                var train = kvp.Key;
+                if (train.Address <= 0) continue;
+
+                // minden aktív funkció kapcsolása
+                foreach (int fn in train.ActiveFunctions)
+                {
+                    z21.SetFunction(train.Address, fn, true);
+
+                    // ha a kijelölt vonat, és van hozzá gomb, állítsuk a gomb színét is
+                    if (SelectedTrain() == train && functionButtons != null &&
+                        fn >= 0 && fn < functionButtons.Length)
+                    {
+                        var btn = functionButtons[fn];
+                        if (btn != null)
+                            btn.BackColor = Color.Yellow;
+                    }
+                }
+            }
+        }
         /// <summary>
         /// Betölti a kiválasztott vonathoz tartozó funkciókat az adatbázisból.
         /// </summary>
-        /*private void LoadFunctionsForTrain(TrainModel sel)
+        private void LoadFunctionsForTrain(TrainModel sel)
         {
             if (sel == null) return;
             if (!trainDbMap.TryGetValue(sel, out int trainId))
@@ -227,7 +278,7 @@ namespace minitrains
             sel.ActiveFunctions.Clear();
             string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
 
-            // ha még nem inicializáltuk a tömböt (biztonság kedvéért)
+            
             if (functionButtons == null)
             {
                 functionButtons = new[]
@@ -241,7 +292,7 @@ namespace minitrains
                 };
             }
 
-            // alap-reset minden gombra
+            
             for (int i = 0; i < functionButtons.Length; i++)
             {
                 var btn = functionButtons[i];
@@ -296,10 +347,10 @@ namespace minitrains
 
                             var btn = functionButtons[number];
 
-                            // láthatóság
+                            
                             btn.Visible = !hidden;
 
-                            // szöveg
+                            
                             string nameToShow = !string.IsNullOrEmpty(customName)
                                 ? customName
                                 : (!string.IsNullOrEmpty(defaultName) ? defaultName : "F" + number);
@@ -316,7 +367,9 @@ namespace minitrains
                                         using (var img = Image.FromFile(path))
                                         {
                                             btn.Image = new Bitmap(img);
+                                            
                                         }
+                                        
                                         btn.ImageAlign = ContentAlignment.TopCenter;
                                         btn.TextAlign = ContentAlignment.BottomCenter;
                                     }
@@ -349,14 +402,14 @@ namespace minitrains
                     }
                 }
 
-                // opcionális: ha az alapállapotok szerint rögtön kiküldenéd Z21-nek a funkciókat,
-                // itt végigmész sel.ActiveFunctions-en és meghívod a Z21 funkcióparancsokat.
+                
+                
             }
             catch
             {
-                // DB hibák figyelmen kívül hagyása
+                
             }
-        }*/
+        }
 
         /// <summary>
         /// Frissíti a sebesség kijelzőt a kiválasztott vonat alapján.
@@ -367,14 +420,6 @@ namespace minitrains
             double sebesseg = Math.Round(sel.Speed * 4.1);
             label1.Text = "Sebesség: " + sebesseg.ToString() + " km/h";
         }
-
-
-
-
-        /// <summary>
-        /// Frissíti az összes funkciógomb állapotát a kiválasztott vonat alapján.
-        /// </summary>
-
 
         /// <summary>
         /// Növeli a sebességet egy egységgel.
@@ -435,19 +480,34 @@ namespace minitrains
             label1.Text = "Sebesség: " + Math.Round(sel.Speed * 4.1).ToString() + " km/h";
             trackBar1.Value = sel.Speed;
 
-            //LoadFunctionsForTrain(sel);
+            LoadFunctionsForTrain(sel);
         }
+
         /// <summary>
         /// Irányváltás gomb: megfordítja a vonat irányát és nullázza a sebességet.
         /// </summary>
         private void button_direction_Click(object sender, EventArgs e)
         {
-            trackBar1.Value = 0;
-            SelectedTrain().Direction = !SelectedTrain().Direction;
-            label2.Text = "Irány: " + (SelectedTrain().Direction ? "Előre" : "Hátra");
-            label1.Text = "Sebesség: 0 km/h";
+            bool vesz = false;
+            if (trackBar1.Value > 0)
+            {
+                vesz = true;
+                
+            }
+            if (vesz)
+            {
+                z21.EmergencyStopLoco(SelectedTrain().Address, SelectedTrain().Direction);
+                trackBar1.Value = 0;
+            }
+            else
+            {
+                SelectedTrain().Direction = !SelectedTrain().Direction;
 
-            z21.SetLocoDrive(SelectedTrain().Address, 0, SelectedTrain().Direction);
+                label2.Text = "Irány: " + (SelectedTrain().Direction ? "Előre" : "Hátra");
+                label1.Text = "Sebesség: 0 km/h";
+
+                z21.SetLocoDrive(SelectedTrain().Address, 0, SelectedTrain().Direction);
+            }
         }
 
         /// <summary>
@@ -572,7 +632,7 @@ namespace minitrains
             {
                 if (editor.ShowDialog() == DialogResult.OK)
                 {
-                    //LoadFunctionsForTrain(sel);
+                    LoadFunctionsForTrain(sel);
                 }
             }
         }

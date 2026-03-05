@@ -118,7 +118,9 @@
             Controls.Add(numericUpDown1);
             Controls.Add(button2);
             Controls.Add(button1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "Form_vonathozzaadas";
             Text = "Vonat hozzáadása";
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();

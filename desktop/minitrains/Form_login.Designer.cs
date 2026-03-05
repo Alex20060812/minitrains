@@ -105,7 +105,9 @@
             Controls.Add(button2);
             Controls.Add(textBox2);
             Controls.Add(textBox1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "Form_login";
             Text = "Bejelentkezés";
             ResumeLayout(false);

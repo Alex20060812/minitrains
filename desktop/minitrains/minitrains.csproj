@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.3" />
     <PackageReference Include="MySql.Data" Version="9.6.0" />
-    <PackageReference Include="Tellurian.Trains.Adapters.Z21" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>

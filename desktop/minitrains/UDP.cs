@@ -23,13 +23,15 @@ public class Z21Udp
     // ÚJ: utolsó version-reply ideje
     private DateTime _lastVersionReply = DateTime.MinValue;
 
-    public async Task Connect(string ip, int localPort = 0)
+    public void Connect(string ip, int localPort = 0)
     {
         _udp = new UdpClient(localPort);
         _z21EndPoint = new IPEndPoint(IPAddress.Parse(ip), 21105);
 
         _cts = new CancellationTokenSource();
-        StartListening(_cts.Token);
+
+        // FONTOS: háttérben, nem blokkolva fusson
+        _ = StartListeningAsync(_cts.Token);
 
         IsConnected = true;
 
@@ -37,7 +39,8 @@ public class Z21Udp
         RequestSystemState();
 
         // ÚJ: version ping task indítása
-        //StartVersionMonitor(_cts.Token);
+        // ha van ilyen metódusod, azt is async loopként indítsd:
+        // _ = StartVersionMonitor(_cts.Token);
 
         OnLog?.Invoke("Connected to Z21");
         OnConnectionStateChanged?.Invoke(true);
@@ -51,23 +54,50 @@ public class Z21Udp
         OnConnectionStateChanged?.Invoke(false);
     }
 
-    
-    
-
     // ==========================
     // ===== CONNECT ===========
     // ==========================
 
-    private async void StartListening(CancellationToken token)
+    private async Task StartListeningAsync(CancellationToken token)
     {
-        while (!token.IsCancellationRequested)
+        try
         {
-            try
+            while (!token.IsCancellationRequested)
             {
-                var result  = _udp.ReceiveAsync();
-                ParsePacket(result.Result.Buffer);
+                UdpReceiveResult result;
+                try
+                {
+                    result = await _udp.ReceiveAsync().ConfigureAwait(false);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // UDP lezárva
+                    break;
+                }
+                catch (SocketException)
+                {
+                    // hálózati hiba – logolhatod, majd folytathatod
+                    continue;
+                }
+                catch (OperationCanceledException)
+                {
+                    // token cancel
+                    break;
+                }
+
+                try
+                {
+                    ParsePacket(result.Buffer);
+                }
+                catch
+                {
+                    // parser hiba lenyelése / log
+                }
             }
-            catch { }
+        }
+        finally
+        {
+            // opcionális: itt jelezheted, hogy a listener leállt
         }
     }
 
@@ -118,14 +148,20 @@ public class Z21Udp
     // ==========================
     // ===== LOCO DRIVE =========
     // ==========================
-
+    static readonly byte[] dcc28Table =
+{
+    0x00, // stop
+    0x01, // estop
+    0x02,0x12,0x03,0x13,
+    0x04,0x14,0x05,0x15,
+    0x06,0x16,0x07,0x17,
+    0x08,0x18,0x09,0x19,
+    0x0A,0x1A,0x0B,0x1B,
+    0x0C,0x1C,0x0D,0x1D,
+    0x0E,0x1E,0x0F,0x1F
+};
     public void SetLocoDrive(int address, int step, bool forward)
     {
-        // step:
-        // 0 = STOP
-        // 1 = E-STOP
-        // 2-29 = Step 1-28
-
         if (step < 0) step = 0;
         if (step > 29) step = 29;
 
@@ -134,40 +170,24 @@ public class Z21Udp
 
         if (address >= 128)
             adrMsb |= 0xC0;
-
-        byte speedByte;
-
-        if (step == 0)
+        
+        else if (step > 0)
         {
-            speedByte = 0x00; // STOP
+            step += 1;
         }
-        else if (step == 1)
-        {
-            speedByte = 0x01; // E-STOP
-        }
-        else
-        {
-            int realStep = step - 1; // 1-28
-
-            int low4 = (realStep + 1) / 2;  // 1-14
-            bool v5 = (realStep % 2) == 0;  // páros lépés
-
-            speedByte = (byte)(low4 & 0x0F);
-
-            if (v5)
-                speedByte |= 0x10; // V5 bit
-        }
+        byte speedByte = dcc28Table[step];
 
         if (forward)
-            speedByte |= 0x80; // direction
+            speedByte |= 0x80;   // direction bit (R)
 
         byte xor = (byte)(0xE4 ^ 0x12 ^ adrMsb ^ adrLsb ^ speedByte);
 
-        byte[] packet = {
+        byte[] packet =
+        {
         0x0A,0x00,
         0x40,0x00,
         0xE4,
-        0x12,      // 28 step mód
+        0x12,
         adrMsb,
         adrLsb,
         speedByte,
@@ -295,24 +315,34 @@ public class Z21Udp
     // ======EMERGENCY STOP =====
     // ==========================
 
-    public void EmergencyStopLoco(int address)
+    public void EmergencyStopLoco(int address, bool forward)
     {
+        
+
         byte adrMsb = (byte)((address >> 8) & 0x3F);
         byte adrLsb = (byte)(address & 0xFF);
 
         if (address >= 128)
             adrMsb |= 0xC0;
+        int step = 1;
+        byte speedByte = dcc28Table[step];
 
-        byte xor = (byte)(0x92 ^ adrMsb ^ adrLsb);
+        if (forward)
+            speedByte |= 0x80;   // direction bit (R)
 
-        byte[] packet ={
-            0x08,0x00,
-            0x40,0x00,
-            0x92,
-            adrMsb,
-            adrLsb,
-            xor
-        };
+        byte xor = (byte)(0xE4 ^ 0x12 ^ adrMsb ^ adrLsb ^ speedByte);
+
+        byte[] packet =
+        {
+        0x0A,0x00,
+        0x40,0x00,
+        0xE4,
+        0x12,
+        adrMsb,
+        adrLsb,
+        speedByte,
+        xor
+    };
 
         Send(packet);
     }
