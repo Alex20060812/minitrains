@@ -1,136 +1,249 @@
-// ======================
-// IMAGE CAROUSEL
-// ======================
 class ImageCarousel {
-    constructor() {
-        this.carousel = document.getElementById('carousel');
-        this.prevBtn = document.getElementById('prevBtn');
-        this.nextBtn = document.getElementById('nextBtn');
-        this.indicatorsContainer = document.getElementById('indicators');
-        this.images = document.querySelectorAll('.carousel-image');
 
-        if (!this.carousel || this.images.length === 0) return;
-
-        this.currentIndex = 0;
-        this.imageWidth = this.images[0].offsetWidth + 20;
-        this.init();
+    constructor(){
+    
+    this.images = [
+    "images/train1.jpg",
+    "images/train2.jpg",
+    "images/train3.jpg"
+    ];
+    
+    this.index = 0;
+    
+    this.imageElement = document.getElementById("carouselImage");
+    
+    document
+    .getElementById("prevBtn")
+    .addEventListener("click",()=>this.prev());
+    
+    document
+    .getElementById("nextBtn")
+    .addEventListener("click",()=>this.next());
+    
     }
-
-    init() {
-        this.createIndicators();
-        this.updateIndicators();
-        this.bindEvents();
+    
+    update(){
+    
+    this.imageElement.src = this.images[this.index];
+    
     }
-
-    createIndicators() {
-        this.indicatorsContainer.innerHTML = '';
-        this.images.forEach((_, index) => {
-            const indicator = document.createElement('span');
-            indicator.classList.add('indicator');
-            indicator.addEventListener('click', () => this.scrollToIndex(index));
-            this.indicatorsContainer.appendChild(indicator);
-        });
+    
+    next(){
+    
+    this.index++;
+    
+    if(this.index >= this.images.length){
+    this.index = 0;
     }
-
-    bindEvents() {
-        this.prevBtn?.addEventListener('click', () => this.prev());
-        this.nextBtn?.addEventListener('click', () => this.next());
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'ArrowLeft') this.prev();
-            if (e.key === 'ArrowRight') this.next();
-        });
-
-        let startX = 0;
-        this.carousel.addEventListener('touchstart', e => {
-            startX = e.touches[0].clientX;
-        });
-
-        this.carousel.addEventListener('touchend', e => {
-            const endX = e.changedTouches[0].clientX;
-            if (startX - endX > 50) this.next();
-            if (endX - startX > 50) this.prev();
-        });
+    
+    this.update();
+    
     }
-
-    scrollToIndex(index) {
-        this.carousel.scrollTo({
-            left: index * this.imageWidth,
-            behavior: 'smooth'
-        });
-        this.currentIndex = index;
-        this.updateIndicators();
+    
+    prev(){
+    
+    this.index--;
+    
+    if(this.index < 0){
+    this.index = this.images.length - 1;
     }
-
-    next() {
-        this.currentIndex = (this.currentIndex + 1) % this.images.length;
-        this.scrollToIndex(this.currentIndex);
+    
+    this.update();
+    
     }
-
-    prev() {
-        this.currentIndex =
-            (this.currentIndex - 1 + this.images.length) % this.images.length;
-        this.scrollToIndex(this.currentIndex);
+    
     }
-
-    updateIndicators() {
-        const indicators = this.indicatorsContainer.querySelectorAll('.indicator');
-        indicators.forEach((ind, i) => {
-            ind.classList.toggle('active', i === this.currentIndex);
-        });
+    
+    async function loadFiles(){
+    
+    try{
+    
+    const response = await fetch("http://localhost:3000/api/downloads");
+    
+    const data = await response.json();
+    
+    const list = document.getElementById("fileList");
+    
+    list.innerHTML="";
+    
+    data.forEach(file=>{
+    
+    const li = document.createElement("li");
+    
+    li.textContent = file.name;
+    
+    list.appendChild(li);
+    
+    });
+    
     }
-}
-
-// ======================
-// CONTACT FORM (EMAIL)
-// ======================
-document.getElementById("contactForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    const name = document.getElementById("contactName").value.trim();
-    const email = document.getElementById("contactEmail").value.trim();
-    const message = document.getElementById("contactMessage").value.trim();
-
-    if(!name || !email || !message) return alert("Kérlek tölts ki minden mezőt!");
-
-    const subject = encodeURIComponent("MiniTrains üzenet: " + name);
-    const body = encodeURIComponent(message + "\n\nEmail: " + email);
-    window.location.href = `mailto:kovako775@logiker.hu?subject=${subject}&body=${body}`;
-
-    const msg = document.getElementById("formMessage");
-    msg.style.display = "block";
-    this.reset();
-});
-
-// ======================
-// DOWNLOAD BUTTON (FETCH API)
-// ======================
-document.getElementById("downloadBtn").addEventListener("click", async () => {
-    const messageEl = document.getElementById("downloadMessage");
-    messageEl.style.display = "block";
-    try {
-        const response = await fetch(''); // ide jön majd az API URL
-        if (!response.ok) throw new Error("Hiba a letöltés során");
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "MiniTrains.zip"; // fájl név
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-        messageEl.textContent = "Fájl letöltése sikeres!";
-    } catch (error) {
-        console.error(error);
-        messageEl.textContent = "Hiba történt a letöltés során.";
-        messageEl.style.color = "red";
+    catch(error){
+    
+    console.error("Hiba a lista betöltésekor",error);
+    
     }
-});
-
-// ======================
-// INIT
-// ======================
-document.addEventListener("DOMContentLoaded", () => {
+    
+    }
+    
+    async function downloadFile(){
+    
+    try{
+    
+    const response = await fetch("http://localhost:3000/api/download");
+    
+    const blob = await response.blob();
+    
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement("a");
+    
+    a.href = url;
+    
+    a.download = "file.zip";
+    
+    a.click();
+    
+    }
+    catch(error){
+    
+    console.error("Letöltési hiba",error);
+    
+    }
+    
+    }
+    
+    async function sendForm(event){
+    
+    event.preventDefault();
+    
+    const name = document.getElementById("contactName").value;
+    const email = document.getElementById("contactEmail").value;
+    const message = document.getElementById("contactMessage").value;
+    
+    try{
+    
+    const response = await fetch("http://localhost:3000/api/contact",{
+    
+    method:"POST",
+    
+    headers:{
+    "Content-Type":"application/json"
+    },
+    
+    body:JSON.stringify({
+    name,
+    email,
+    message
+    })
+    
+    });
+    
+    const data = await response.json();
+    
+    document.getElementById("formMessage").style.display="block";
+    
+    document.getElementById("contactForm").reset();
+    
+    }
+    catch(error){
+    
+    console.error("Küldési hiba",error);
+    
+    }
+    
+    }
+    
+    document.addEventListener("DOMContentLoaded",()=>{
+    
     new ImageCarousel();
-});
+    
+    loadFiles();
+    
+    document
+    .getElementById("downloadBtn")
+    .addEventListener("click",downloadFile);
+    
+    document
+    .getElementById("contactForm")
+    .addEventListener("submit",sendForm);
+    
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+    
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const userInfo = document.getElementById('userInfo');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+    
+        // Form toggles
+        loginBtn.addEventListener('click', () => {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        });
+        registerBtn.addEventListener('click', () => {
+            registerForm.style.display = 'block';
+            loginForm.style.display = 'none';
+        });
+        logoutBtn.addEventListener('click', async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            location.reload();
+        });
+    
+        // Regisztráció
+        registerForm.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('Sikeres regisztráció! Jelentkezz be.');
+                registerForm.style.display = 'none';
+            } else {
+                document.getElementById('registerError').innerText = data.error;
+            }
+        });
+    
+        // Bejelentkezés
+        loginForm.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                loginForm.style.display = 'none';
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+                userInfo.style.display = 'block';
+                usernameDisplay.innerText = username;
+            } else {
+                document.getElementById('loginError').innerText = data.error;
+            }
+        });
+    
+        // Ellenőrizzük, ha a user már be van jelentkezve
+        fetch('/api/me')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.error) {
+                    loginBtn.style.display = 'none';
+                    registerBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-block';
+                    userInfo.style.display = 'block';
+                    usernameDisplay.innerText = data.username;
+                }
+            });
+    });

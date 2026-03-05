@@ -23,6 +23,10 @@
                 <li><a href="#download">Letöltés</a></li>
                 <li><a href="#contact">Kapcsolat</a></li>
             </ul>
+            <!-- Bejelentkezés / Regisztráció gombok a navba -->
+            <button id="loginBtn">Bejelentkezés</button>
+            <button id="registerBtn">Regisztráció</button>
+            <button id="logoutBtn" style="display:none;">Kijelentkezés</button>
         </nav>
     </section>
 </header>
@@ -38,9 +42,8 @@
              alt="Model railway bridge scene" class="carousel-image" loading="lazy">
         <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg"
              alt="Detailed model train diorama" class="carousel-image" loading="lazy">
-             <img src="IMG_1305.jpg"
-                  alt="Detailed model train diorama" class="carousel-image" loading="lazy">
-           
+        <img src="IMG_1305.jpg"
+             alt="Detailed model train diorama" class="carousel-image" loading="lazy">
         <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg"
              alt="Detailed HO scale city scene" class="carousel-image" loading="lazy">
     </div>
@@ -50,6 +53,38 @@
 
     <div class="indicators" id="indicators"></div>
 </div>
+
+<main>
+    <!-- Felhasználói információ és űrlapok -->
+    <section id="userInfo" style="display:none;">
+        <p>Üdv, <span id="usernameDisplay"></span>!</p>
+    </section>
+
+    <section id="loginForm" style="display:none;">
+        <h2>Bejelentkezés</h2>
+        <form>
+            <input type="text" id="loginUsername" placeholder="Felhasználónév" required>
+            <input type="password" id="loginPassword" placeholder="Jelszó" required>
+            <button type="submit">Bejelentkezés</button>
+        </form>
+        <p id="loginError" class="error"></p>
+    </section>
+
+    <section id="registerForm" style="display:none;">
+        <h2>Regisztráció</h2>
+        <form>
+            <input type="text" id="registerUsername" placeholder="Felhasználónév" required>
+            <input type="password" id="registerPassword" placeholder="Jelszó" required>
+            <button type="submit">Regisztráció</button>
+        </form>
+        <p id="registerError" class="error"></p>
+    </section>
+
+    <!-- Régi tartalom -->
+    <section id="existingContent">
+        <!-- Ide kerül a korábbi oldalad egyéb tartalma -->
+    </section>
+</main>
 
 <!-- DOWNLOAD -->
 <section id="download">
@@ -73,6 +108,7 @@
     </form>
 </section>
 
+<script src="script.js"></script>
 <script src="index.js"></script>
 </body>
 </html>
