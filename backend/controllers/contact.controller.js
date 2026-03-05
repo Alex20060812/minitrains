@@ -1,29 +1,28 @@
 import { db } from "../config/db.js";
 
-export const create = async (req, res) => {
-  const { name, email, message } = req.body;
-  if (!name || !email || !message)
-    return res.status(400).json({ message: "Hiányzó adat" });
-
-  await db.query(
-    "INSERT INTO contacts (name,email,message) VALUES (?,?,?)",
-    [name, email, message]
-  );
-  res.status(201).json({ message: "Mentve" });
+export const getContacts = async (req, res, next) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM contacts");
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
 };
 
-export const getAll = async (_, res) => {
-  const [rows] = await db.query("SELECT * FROM contacts");
-  res.json(rows);
-};
+export const createContact = async (req, res, next) => {
+  try {
+    const { name, message } = req.body;
 
-export const getOne = async (req, res) => {
-  const [rows] = await db.query("SELECT * FROM contacts WHERE id=?", [req.params.id]);
-  if (!rows.length) return res.status(404).json({ message: "Nincs ilyen" });
-  res.json(rows[0]);
-};
+    if (!name || !message)
+      return res.status(400).json({ message: "Hiányzó adat" });
 
-export const remove = async (req, res) => {
-  await db.query("DELETE FROM contacts WHERE id=?", [req.params.id]);
-  res.json({ message: "Törölve" });
+    const [result] = await db.query(
+      "INSERT INTO contacts (name,message) VALUES (?,?)",
+      [name, message]
+    );
+
+    res.status(201).json({ id: result.insertId });
+  } catch (err) {
+    next(err);
+  }
 };

@@ -1,289 +1,301 @@
-/* ─── BODY ───────────────────────────────────── */
-body {
-    background-color: #178edd;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+/* ===== MiniTrains – Modern Blue UI ===== */
+:root{
+  --bg-900: #061a3a;    /* sötétkék */
+  --bg-800: #0b2a57;
+  --bg-700: #0f3b7a;
+
+  --card: rgba(255,255,255,0.92);
+  --card-strong: #ffffff;
+  --text: #0b1220;
+  --muted: #475569;
+
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+
+  --border: rgba(255,255,255,0.22);
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  --radius: 18px;
 }
 
-h1, h2 {
-    color: white;
-    text-align: center;
+*{ box-sizing: border-box; }
+
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  line-height: 1.5;
+
+  /* KÉK HÁTTÉR */
+  background:
+    radial-gradient(900px 480px at 20% 10%, rgba(59,130,246,0.35), transparent 60%),
+    radial-gradient(800px 460px at 80% 0%, rgba(37,99,235,0.35), transparent 55%),
+    linear-gradient(180deg, var(--bg-900), var(--bg-800) 35%, var(--bg-700));
 }
 
-/* ─── HEADER ─────────────────────────────────── */
-header {
-    display: flex;
-    padding: 20px;
-    font-weight: bold;
+/* ===== Centered page width ===== */
+header, main, section{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-.menu {
-    display: flex;
-    gap: 20px;
-    align-items: center;
+/* ===== Header / Title ===== */
+header{
+  padding-top: 22px;
 }
 
-.nav-links {
-    display: flex;
-    gap: 20px;
-    list-style: none;
-    margin-left: auto;
+.menu .cim h1{
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  letter-spacing: -0.4px;
+  color: #ffffff;
 }
 
-.nav-links a {
-    color: white;
-    text-decoration: none;
+/* ===== Nav as glass card ===== */
+nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  background: rgba(255,255,255,0.10);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
 }
 
-.cim {
-    justify-content: left;
-    display: flex;
+.nav-links{
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
 }
 
-/* ─── CAROUSEL ──────────────────────────────── */
-.carousel-container {
-    max-width: 1100px;
-    margin: 40px auto;
-    position: relative;
+.nav-links a{
+  text-decoration: none;
+  color: rgba(255,255,255,0.92);
+  font-weight: 650;
+  padding: 8px 10px;
+  border-radius: 12px;
 }
 
-.carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 24px;
-    padding: 20px 40px;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Firefox */
+.nav-links a:hover{
+  background: rgba(255,255,255,0.14);
 }
 
-.carousel::-webkit-scrollbar { display: none; }
-
-.carousel-image {
-    flex: 0 0 320px;
-    height: 240px;
-    object-fit: cover;
-    border-radius: 12px;
-    scroll-snap-align: center;
-    transition: transform 0.25s ease;
+/* ===== Buttons ===== */
+.auth-buttons{
+  display: flex;
+  gap: 8px;
 }
 
-.carousel-image:hover { transform: scale(1.06); }
-
-/* Arrows */
-.carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255,255,255,0.9);
-    border: none;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 10;
+button{
+  border: 1px solid rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.95);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
-.prev-btn { left: 10px; }
-.next-btn { right: 10px; }
-
-.carousel-btn:hover {
-    background: white;
-    transform: translateY(-50%) scale(1.12);
+button:hover{
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.20);
 }
 
-/* Indicators */
-.indicators {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+button:active{ transform: translateY(0); }
+
+/* Primary actions */
+.download-button,
+form button[type="submit"]{
+  background: linear-gradient(180deg, var(--blue-500), var(--blue-600));
+  border-color: rgba(255,255,255,0.22);
+  color: #fff;
 }
 
-.indicator {
-    width: 12px;
-    height: 12px;
-    background: #c3d9ff;
-    border-radius: 50%;
-    cursor: pointer;
+.download-button:hover,
+form button[type="submit"]:hover{
+  background: linear-gradient(180deg, var(--blue-600), var(--blue-700));
 }
 
-.indicator.active {
-    background: #178edd;
-    transform: scale(1.3);
+/* ===== Cards ===== */
+.card{
+  margin: 16px auto;
+  padding: 16px;
+
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-/* ─── DOWNLOAD SECTION ───────────────────────── */
-.download-content {
-    text-align: center;
-    background: #c3e0ff;
-    padding: 40px;
-    margin: 40px auto;
-    border-radius: 12px;
+h2{
+  margin: 0 0 10px 0;
+  font-size: 20px;
 }
 
-.download-button {
-    padding: 12px 24px;
-    background: #178edd;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1rem;
+h3{
+  margin: 14px 0 10px 0;
+  font-size: 16px;
+  color: var(--muted);
 }
 
-.download-button:hover {
-    background: #146bb3;
+.hint{
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 0;
 }
 
-#downloadMessage {
-    margin-top: 12px;
+/* ===== Status text ===== */
+.error{ color: #b91c1c; margin-top: 10px; }
+.ok{ color: #166534; margin-top: 10px; }
+
+/* ===== Forms ===== */
+form{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
 }
 
-/* ─── CONTACT FORM ───────────────────────────── */
-#contact {
-    max-width: 600px;
-    margin: 60px auto;
-    padding: 20px;
-    background: #f8fbff;
-    border-radius: 12px;
+input, textarea{
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  background: var(--card-strong);
+  color: var(--text);
+  outline: none;
 }
 
-#contact h2 {
-    color: #178edd;
-    text-align: center;
+input:focus, textarea:focus{
+  border-color: rgba(37,99,235,0.60);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.18);
 }
 
-#contactForm {
-    display: grid;
-    gap: 12px;
+textarea{
+  min-height: 120px;
+  resize: vertical;
 }
 
-#contactForm input,
-#contactForm textarea {
+/* ===== Lists ===== */
+.list{
+  padding-left: 18px;
+  margin: 8px 0 0 0;
+}
+
+.list li{
+  margin: 6px 0;
+}
+
+/* ===== Carousel (kisebb + középen) ===== */
+.carousel-container{
+  width: min(860px, 92vw);
+  margin: 18px auto 6px auto;
+  border-radius: var(--radius);
+  overflow: hidden;
+
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+/* slide strip */
+.carousel{
+  display: flex;
+  transition: transform 320ms ease;
+}
+
+.carousel-image{
+  width: 100%;
+  height: 280px; /* kisebb slide */
+  object-fit: cover;
+  flex: 0 0 100%;
+}
+
+/* arrows */
+.carousel-btn{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.85);
+  color: #0b1220;
+  font-weight: 900;
+
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+}
+
+.carousel-btn:hover{
+  background: rgba(219,234,254,0.98);
+}
+
+.prev-btn{ left: 10px; }
+.next-btn{ right: 10px; }
+
+/* dots */
+.indicators{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255,255,255,0.45);
+  cursor: pointer;
+}
+
+.dot.active{
+  background: rgba(255,255,255,0.95);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px){
+  .menu .cim h1{
+    font-size: 22px;
+  }
+
+  nav{
     padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #c3d9ff;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 1rem;
-}
+    gap: 10px;
+  }
 
-#contactForm textarea {
-    min-height: 120px;
-    resize: vertical;
-}
+  .carousel-image{
+    height: 200px; /* mobilon kisebb */
+  }
 
-#contactForm button {
-    background: #178edd;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1rem;
-}
-
-#contactForm button:hover {
-    background: #146bb3;
-}
-
-/* ─── RESPONSIVE ────────────────────────────── */
-@media (max-width: 768px) {
-    .carousel-image {
-        flex: 0 0 280px;
-        height: 210px;
-    }
-
-    .carousel-btn {
-        width: 42px;
-        height: 42px;
-        font-size: 20px;
-    }
-
-    .nav-links {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-}
-
-/* ------------------------------
-   Általános űrlap stílus
------------------------------- */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 350px;
-    margin: 20px auto;
-    padding: 25px;
-    background-color: #f5f5f5;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    font-family: 'Arial', sans-serif;
-}
-
-form h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-/* Input mezők */
-form input[type="text"],
-form input[type="password"] {
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-form input[type="text"]:focus,
-form input[type="password"]:focus {
-    outline: none;
-    border-color: #0077cc;
-    box-shadow: 0 0 5px rgba(0,119,204,0.3);
-}
-
-/* Gombok */
-form button {
-    padding: 12px;
-    background-color: #0077cc;
-    color: #fff;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-form button:hover {
-    background-color: #005fa3;
-    transform: translateY(-2px);
-}
-
-/* Hibaüzenetek */
-.error {
-    color: #d8000c;
-    font-size: 14px;
-    text-align: center;
-}
-
-/* Felhasználói üdvözlés */
-#userInfo {
-    text-align: center;
-    font-size: 18px;
-    margin: 20px auto;
-    color: #333;
-}
-
-/* Mobilreszponzív */
-@media (max-width: 480px) {
-    form {
-        width: 90%;
-        padding: 20px;
-    }
+  .card{
+    margin: 12px auto;
+    padding: 14px;
+  }
 }
