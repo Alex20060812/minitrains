@@ -235,8 +235,46 @@ Vasútmodellhez tartozó technikai adatok.
 - Egy **funkcióhoz** tartozhat egyedi beállítás a `functions_settings` táblában
 - A `train_details` tábla technikai adatokat tárol egy adott vonathoz
 
----
 
+---
+## ⚙️) Backend indítása
+
+- Nyissuk meg a minitrains mappát Visual Studio Code-ban.
+
+- Kattintsunk jobb egér gombbal a backend mappára.
+
+
+- Majd válasszuk ezt:
+<img width="312" height="36" alt="image" src="https://github.com/user-attachments/assets/b03c371e-f35d-4a17-bddf-af791e82b2cf" />
+
+
+
+- A terminálba írjuk be::
+```bash
+npm i 
+```
+```bash
+npm start
+```
+
+---
+## 🖥️) Frontend indítása
+
+- Nyissuk meg a minitrains mappát Visual Studio Code-ban.
+
+- Kattintsunk jobb gombbal a frontend mappára a Visual Studio Code-on belül.
+
+- Válasszuk ezt:
+<img width="318" height="26" alt="image" src="https://github.com/user-attachments/assets/c24fd62c-b60f-47d8-bc24-ec3f87f15d2d" />
+
+- A terminálba írjuk be:
+```bash
+npm i 
+```
+```bash
+npm run dev
+```
+---
 ## 👥 Csapattagok
 
 ### Kovácsevics Alex
