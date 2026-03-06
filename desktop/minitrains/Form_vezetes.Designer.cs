@@ -42,7 +42,6 @@
             button_F2 = new Button();
             button_F3 = new Button();
             button_F4 = new Button();
-            button_F5 = new Button();
             button_F6 = new Button();
             button_F7 = new Button();
             button_F8 = new Button();
@@ -66,6 +65,7 @@
             button_F26 = new Button();
             button_F27 = new Button();
             button_F28 = new Button();
+            button_F5 = new Button();
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
@@ -163,6 +163,7 @@
             // 
             // tableLayoutPanel1
             // 
+            tableLayoutPanel1.BackColor = Color.Transparent;
             tableLayoutPanel1.ColumnCount = 10;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10F));
@@ -179,7 +180,6 @@
             tableLayoutPanel1.Controls.Add(button_F2, 2, 0);
             tableLayoutPanel1.Controls.Add(button_F3, 3, 0);
             tableLayoutPanel1.Controls.Add(button_F4, 4, 0);
-            tableLayoutPanel1.Controls.Add(button_F5, 5, 0);
             tableLayoutPanel1.Controls.Add(button_F6, 6, 0);
             tableLayoutPanel1.Controls.Add(button_F7, 7, 0);
             tableLayoutPanel1.Controls.Add(button_F8, 8, 0);
@@ -203,13 +203,14 @@
             tableLayoutPanel1.Controls.Add(button_F26, 6, 2);
             tableLayoutPanel1.Controls.Add(button_F27, 7, 2);
             tableLayoutPanel1.Controls.Add(button_F28, 8, 2);
-            tableLayoutPanel1.Location = new Point(134, 559);
+            tableLayoutPanel1.Controls.Add(button_F5, 5, 0);
+            tableLayoutPanel1.Location = new Point(45, 560);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(604, 213);
+            tableLayoutPanel1.Size = new Size(780, 213);
             tableLayoutPanel1.TabIndex = 7;
             // 
             // button_F0
@@ -220,7 +221,7 @@
             button_F0.ImageAlign = ContentAlignment.TopCenter;
             button_F0.Location = new Point(3, 3);
             button_F0.Name = "button_F0";
-            button_F0.Size = new Size(54, 64);
+            button_F0.Size = new Size(72, 64);
             button_F0.TabIndex = 0;
             button_F0.Text = "F0";
             button_F0.TextAlign = ContentAlignment.BottomCenter;
@@ -233,9 +234,9 @@
             button_F1.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F1.ForeColor = Color.Black;
             button_F1.ImageAlign = ContentAlignment.TopCenter;
-            button_F1.Location = new Point(63, 3);
+            button_F1.Location = new Point(81, 3);
             button_F1.Name = "button_F1";
-            button_F1.Size = new Size(54, 64);
+            button_F1.Size = new Size(72, 64);
             button_F1.TabIndex = 1;
             button_F1.Text = "F1";
             button_F1.TextAlign = ContentAlignment.BottomCenter;
@@ -248,9 +249,9 @@
             button_F2.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F2.ForeColor = Color.Black;
             button_F2.ImageAlign = ContentAlignment.TopCenter;
-            button_F2.Location = new Point(123, 3);
+            button_F2.Location = new Point(159, 3);
             button_F2.Name = "button_F2";
-            button_F2.Size = new Size(54, 64);
+            button_F2.Size = new Size(72, 64);
             button_F2.TabIndex = 2;
             button_F2.Text = "F2";
             button_F2.TextAlign = ContentAlignment.BottomCenter;
@@ -264,9 +265,9 @@
             button_F3.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F3.ForeColor = Color.Black;
             button_F3.ImageAlign = ContentAlignment.TopCenter;
-            button_F3.Location = new Point(183, 3);
+            button_F3.Location = new Point(237, 3);
             button_F3.Name = "button_F3";
-            button_F3.Size = new Size(54, 64);
+            button_F3.Size = new Size(72, 64);
             button_F3.TabIndex = 3;
             button_F3.Text = "F3";
             button_F3.TextAlign = ContentAlignment.BottomCenter;
@@ -280,30 +281,14 @@
             button_F4.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F4.ForeColor = Color.Black;
             button_F4.ImageAlign = ContentAlignment.TopCenter;
-            button_F4.Location = new Point(243, 3);
+            button_F4.Location = new Point(315, 3);
             button_F4.Name = "button_F4";
-            button_F4.Size = new Size(54, 64);
+            button_F4.Size = new Size(72, 64);
             button_F4.TabIndex = 4;
             button_F4.Text = "F4";
             button_F4.TextAlign = ContentAlignment.BottomCenter;
             button_F4.UseVisualStyleBackColor = false;
             button_F4.Click += button_F4_Click;
-            // 
-            // button_F5
-            // 
-            button_F5.BackColor = Color.Gray;
-            button_F5.BackgroundImageLayout = ImageLayout.Stretch;
-            button_F5.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
-            button_F5.ForeColor = Color.Black;
-            button_F5.ImageAlign = ContentAlignment.TopCenter;
-            button_F5.Location = new Point(303, 3);
-            button_F5.Name = "button_F5";
-            button_F5.Size = new Size(54, 64);
-            button_F5.TabIndex = 5;
-            button_F5.Text = "F5";
-            button_F5.TextAlign = ContentAlignment.BottomCenter;
-            button_F5.UseVisualStyleBackColor = false;
-            button_F5.Click += button_F5_Click;
             // 
             // button_F6
             // 
@@ -312,9 +297,9 @@
             button_F6.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F6.ForeColor = Color.Black;
             button_F6.ImageAlign = ContentAlignment.TopCenter;
-            button_F6.Location = new Point(363, 3);
+            button_F6.Location = new Point(471, 3);
             button_F6.Name = "button_F6";
-            button_F6.Size = new Size(54, 64);
+            button_F6.Size = new Size(72, 64);
             button_F6.TabIndex = 6;
             button_F6.Text = "F6";
             button_F6.TextAlign = ContentAlignment.BottomCenter;
@@ -328,9 +313,9 @@
             button_F7.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F7.ForeColor = Color.Black;
             button_F7.ImageAlign = ContentAlignment.TopCenter;
-            button_F7.Location = new Point(423, 3);
+            button_F7.Location = new Point(549, 3);
             button_F7.Name = "button_F7";
-            button_F7.Size = new Size(54, 64);
+            button_F7.Size = new Size(72, 64);
             button_F7.TabIndex = 7;
             button_F7.Text = "F7";
             button_F7.TextAlign = ContentAlignment.BottomCenter;
@@ -344,9 +329,9 @@
             button_F8.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F8.ForeColor = Color.Black;
             button_F8.ImageAlign = ContentAlignment.TopCenter;
-            button_F8.Location = new Point(483, 3);
+            button_F8.Location = new Point(627, 3);
             button_F8.Name = "button_F8";
-            button_F8.Size = new Size(54, 64);
+            button_F8.Size = new Size(72, 64);
             button_F8.TabIndex = 8;
             button_F8.Text = "F8";
             button_F8.TextAlign = ContentAlignment.BottomCenter;
@@ -360,9 +345,9 @@
             button_F9.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F9.ForeColor = Color.Black;
             button_F9.ImageAlign = ContentAlignment.TopCenter;
-            button_F9.Location = new Point(543, 3);
+            button_F9.Location = new Point(705, 3);
             button_F9.Name = "button_F9";
-            button_F9.Size = new Size(58, 64);
+            button_F9.Size = new Size(72, 64);
             button_F9.TabIndex = 9;
             button_F9.Text = "F9";
             button_F9.TextAlign = ContentAlignment.BottomCenter;
@@ -378,7 +363,7 @@
             button_F10.ImageAlign = ContentAlignment.TopCenter;
             button_F10.Location = new Point(3, 73);
             button_F10.Name = "button_F10";
-            button_F10.Size = new Size(54, 64);
+            button_F10.Size = new Size(72, 64);
             button_F10.TabIndex = 10;
             button_F10.Text = "F10";
             button_F10.TextAlign = ContentAlignment.BottomCenter;
@@ -392,9 +377,9 @@
             button_F11.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F11.ForeColor = Color.Black;
             button_F11.ImageAlign = ContentAlignment.TopCenter;
-            button_F11.Location = new Point(63, 73);
+            button_F11.Location = new Point(81, 73);
             button_F11.Name = "button_F11";
-            button_F11.Size = new Size(54, 64);
+            button_F11.Size = new Size(72, 64);
             button_F11.TabIndex = 11;
             button_F11.Text = "F11";
             button_F11.TextAlign = ContentAlignment.BottomCenter;
@@ -408,9 +393,9 @@
             button_F12.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F12.ForeColor = Color.Black;
             button_F12.ImageAlign = ContentAlignment.TopCenter;
-            button_F12.Location = new Point(123, 73);
+            button_F12.Location = new Point(159, 73);
             button_F12.Name = "button_F12";
-            button_F12.Size = new Size(54, 64);
+            button_F12.Size = new Size(72, 64);
             button_F12.TabIndex = 12;
             button_F12.Text = "F12";
             button_F12.TextAlign = ContentAlignment.BottomCenter;
@@ -424,9 +409,9 @@
             button_F13.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F13.ForeColor = Color.Black;
             button_F13.ImageAlign = ContentAlignment.TopCenter;
-            button_F13.Location = new Point(183, 73);
+            button_F13.Location = new Point(237, 73);
             button_F13.Name = "button_F13";
-            button_F13.Size = new Size(54, 64);
+            button_F13.Size = new Size(72, 64);
             button_F13.TabIndex = 13;
             button_F13.Text = "F13";
             button_F13.TextAlign = ContentAlignment.BottomCenter;
@@ -440,9 +425,9 @@
             button_F14.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F14.ForeColor = Color.Black;
             button_F14.ImageAlign = ContentAlignment.TopCenter;
-            button_F14.Location = new Point(243, 73);
+            button_F14.Location = new Point(315, 73);
             button_F14.Name = "button_F14";
-            button_F14.Size = new Size(54, 64);
+            button_F14.Size = new Size(72, 64);
             button_F14.TabIndex = 14;
             button_F14.Text = "F14";
             button_F14.TextAlign = ContentAlignment.BottomCenter;
@@ -456,9 +441,9 @@
             button_F15.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F15.ForeColor = Color.Black;
             button_F15.ImageAlign = ContentAlignment.TopCenter;
-            button_F15.Location = new Point(303, 73);
+            button_F15.Location = new Point(393, 73);
             button_F15.Name = "button_F15";
-            button_F15.Size = new Size(54, 64);
+            button_F15.Size = new Size(72, 64);
             button_F15.TabIndex = 15;
             button_F15.Text = "F15";
             button_F15.TextAlign = ContentAlignment.BottomCenter;
@@ -472,9 +457,9 @@
             button_F16.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F16.ForeColor = Color.Black;
             button_F16.ImageAlign = ContentAlignment.TopCenter;
-            button_F16.Location = new Point(363, 73);
+            button_F16.Location = new Point(471, 73);
             button_F16.Name = "button_F16";
-            button_F16.Size = new Size(54, 64);
+            button_F16.Size = new Size(72, 64);
             button_F16.TabIndex = 16;
             button_F16.Text = "F16";
             button_F16.TextAlign = ContentAlignment.BottomCenter;
@@ -488,9 +473,9 @@
             button_F17.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F17.ForeColor = Color.Black;
             button_F17.ImageAlign = ContentAlignment.TopCenter;
-            button_F17.Location = new Point(423, 73);
+            button_F17.Location = new Point(549, 73);
             button_F17.Name = "button_F17";
-            button_F17.Size = new Size(54, 64);
+            button_F17.Size = new Size(72, 64);
             button_F17.TabIndex = 17;
             button_F17.Text = "F17";
             button_F17.TextAlign = ContentAlignment.BottomCenter;
@@ -504,9 +489,9 @@
             button_F18.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F18.ForeColor = Color.Black;
             button_F18.ImageAlign = ContentAlignment.TopCenter;
-            button_F18.Location = new Point(483, 73);
+            button_F18.Location = new Point(627, 73);
             button_F18.Name = "button_F18";
-            button_F18.Size = new Size(54, 64);
+            button_F18.Size = new Size(72, 64);
             button_F18.TabIndex = 18;
             button_F18.Text = "F18";
             button_F18.TextAlign = ContentAlignment.BottomCenter;
@@ -520,9 +505,9 @@
             button_F19.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F19.ForeColor = Color.Black;
             button_F19.ImageAlign = ContentAlignment.TopCenter;
-            button_F19.Location = new Point(543, 73);
+            button_F19.Location = new Point(705, 73);
             button_F19.Name = "button_F19";
-            button_F19.Size = new Size(58, 64);
+            button_F19.Size = new Size(72, 64);
             button_F19.TabIndex = 19;
             button_F19.Text = "F19";
             button_F19.TextAlign = ContentAlignment.BottomCenter;
@@ -538,7 +523,7 @@
             button_F20.ImageAlign = ContentAlignment.TopCenter;
             button_F20.Location = new Point(3, 143);
             button_F20.Name = "button_F20";
-            button_F20.Size = new Size(54, 67);
+            button_F20.Size = new Size(72, 67);
             button_F20.TabIndex = 20;
             button_F20.Text = "F20";
             button_F20.TextAlign = ContentAlignment.BottomCenter;
@@ -552,9 +537,9 @@
             button_F21.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F21.ForeColor = Color.Black;
             button_F21.ImageAlign = ContentAlignment.TopCenter;
-            button_F21.Location = new Point(63, 143);
+            button_F21.Location = new Point(81, 143);
             button_F21.Name = "button_F21";
-            button_F21.Size = new Size(54, 67);
+            button_F21.Size = new Size(72, 67);
             button_F21.TabIndex = 21;
             button_F21.Text = "F21";
             button_F21.TextAlign = ContentAlignment.BottomCenter;
@@ -568,9 +553,9 @@
             button_F22.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F22.ForeColor = Color.Black;
             button_F22.ImageAlign = ContentAlignment.TopCenter;
-            button_F22.Location = new Point(123, 143);
+            button_F22.Location = new Point(159, 143);
             button_F22.Name = "button_F22";
-            button_F22.Size = new Size(54, 67);
+            button_F22.Size = new Size(72, 67);
             button_F22.TabIndex = 22;
             button_F22.Text = "F22";
             button_F22.TextAlign = ContentAlignment.BottomCenter;
@@ -584,9 +569,9 @@
             button_F23.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F23.ForeColor = Color.Black;
             button_F23.ImageAlign = ContentAlignment.TopCenter;
-            button_F23.Location = new Point(183, 143);
+            button_F23.Location = new Point(237, 143);
             button_F23.Name = "button_F23";
-            button_F23.Size = new Size(54, 67);
+            button_F23.Size = new Size(72, 67);
             button_F23.TabIndex = 23;
             button_F23.Text = "F23";
             button_F23.TextAlign = ContentAlignment.BottomCenter;
@@ -600,9 +585,9 @@
             button_F24.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F24.ForeColor = Color.Black;
             button_F24.ImageAlign = ContentAlignment.TopCenter;
-            button_F24.Location = new Point(243, 143);
+            button_F24.Location = new Point(315, 143);
             button_F24.Name = "button_F24";
-            button_F24.Size = new Size(54, 67);
+            button_F24.Size = new Size(72, 67);
             button_F24.TabIndex = 24;
             button_F24.Text = "F24";
             button_F24.TextAlign = ContentAlignment.BottomCenter;
@@ -616,9 +601,9 @@
             button_F25.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F25.ForeColor = Color.Black;
             button_F25.ImageAlign = ContentAlignment.TopCenter;
-            button_F25.Location = new Point(303, 143);
+            button_F25.Location = new Point(393, 143);
             button_F25.Name = "button_F25";
-            button_F25.Size = new Size(54, 67);
+            button_F25.Size = new Size(72, 67);
             button_F25.TabIndex = 25;
             button_F25.Text = "F25";
             button_F25.TextAlign = ContentAlignment.BottomCenter;
@@ -632,9 +617,9 @@
             button_F26.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F26.ForeColor = Color.Black;
             button_F26.ImageAlign = ContentAlignment.TopCenter;
-            button_F26.Location = new Point(363, 143);
+            button_F26.Location = new Point(471, 143);
             button_F26.Name = "button_F26";
-            button_F26.Size = new Size(54, 67);
+            button_F26.Size = new Size(72, 67);
             button_F26.TabIndex = 26;
             button_F26.Text = "F26";
             button_F26.TextAlign = ContentAlignment.BottomCenter;
@@ -648,9 +633,9 @@
             button_F27.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F27.ForeColor = Color.Black;
             button_F27.ImageAlign = ContentAlignment.TopCenter;
-            button_F27.Location = new Point(423, 143);
+            button_F27.Location = new Point(549, 143);
             button_F27.Name = "button_F27";
-            button_F27.Size = new Size(54, 67);
+            button_F27.Size = new Size(72, 67);
             button_F27.TabIndex = 27;
             button_F27.Text = "F27";
             button_F27.TextAlign = ContentAlignment.BottomCenter;
@@ -664,14 +649,30 @@
             button_F28.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F28.ForeColor = Color.Black;
             button_F28.ImageAlign = ContentAlignment.TopCenter;
-            button_F28.Location = new Point(483, 143);
+            button_F28.Location = new Point(627, 143);
             button_F28.Name = "button_F28";
-            button_F28.Size = new Size(54, 67);
+            button_F28.Size = new Size(72, 67);
             button_F28.TabIndex = 28;
             button_F28.Text = "F28";
             button_F28.TextAlign = ContentAlignment.BottomCenter;
             button_F28.UseVisualStyleBackColor = false;
             button_F28.Click += button_F28_Click;
+            // 
+            // button_F5
+            // 
+            button_F5.BackColor = Color.Gray;
+            button_F5.BackgroundImageLayout = ImageLayout.Stretch;
+            button_F5.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
+            button_F5.ForeColor = Color.Black;
+            button_F5.ImageAlign = ContentAlignment.TopCenter;
+            button_F5.Location = new Point(393, 3);
+            button_F5.Name = "button_F5";
+            button_F5.Size = new Size(72, 64);
+            button_F5.TabIndex = 5;
+            button_F5.Text = "F5";
+            button_F5.TextAlign = ContentAlignment.BottomCenter;
+            button_F5.UseVisualStyleBackColor = false;
+            button_F5.Click += button_F5_Click;
             // 
             // label1
             // 
@@ -762,9 +763,9 @@
             // 
             // button_functions
             // 
-            button_functions.Location = new Point(377, 793);
+            button_functions.Location = new Point(374, 791);
             button_functions.Name = "button_functions";
-            button_functions.Size = new Size(117, 42);
+            button_functions.Size = new Size(120, 42);
             button_functions.TabIndex = 17;
             button_functions.Text = "Szerkesztés";
             button_functions.UseVisualStyleBackColor = true;
@@ -794,7 +795,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(884, 861);
+            ClientSize = new Size(889, 861);
             Controls.Add(label9);
             Controls.Add(pictureBox1);
             Controls.Add(button_functions);
