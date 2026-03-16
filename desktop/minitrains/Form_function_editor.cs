@@ -14,6 +14,9 @@ namespace minitrains
         private readonly int trainId;
         private readonly string connStr = GlobalConfig.GetConnectionString();
 
+        public string UpdatedTrainName => textBoxTrainName.Text.Trim();
+        public int UpdatedTrainAddress => (int)numericUpDownTrainAddress.Value;
+
         public Form_function_editor(int trainId)
         {
             InitializeComponent();
@@ -33,6 +36,22 @@ namespace minitrains
                 using (var conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
+
+                    // Vonat alap adatainak (név és cím) betöltése
+                    using (var cmdInfo = new MySqlCommand("SELECT t.name, td.dcc_address FROM trains t LEFT JOIN train_details td ON t.id = td.train_id WHERE t.id = @tid", conn))
+                    {
+                        cmdInfo.Parameters.AddWithValue("@tid", trainId);
+                        using (var rInfo = cmdInfo.ExecuteReader())
+                        {
+                            if (rInfo.Read())
+                            {
+                                textBoxTrainName.Text = rInfo.IsDBNull(rInfo.GetOrdinal("name")) ? "" : rInfo.GetString(rInfo.GetOrdinal("name"));
+                                int addr = rInfo.IsDBNull(rInfo.GetOrdinal("dcc_address")) ? 0 : rInfo.GetInt32(rInfo.GetOrdinal("dcc_address"));
+                                numericUpDownTrainAddress.Value = addr;
+                            }
+                        }
+                    }
+
                     using (var cmd = CreateLoadFunctionsCommand(conn))
                     using (var r = cmd.ExecuteReader())
                     {
@@ -131,10 +150,31 @@ namespace minitrains
                 using (var conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
-                    foreach (DataGridViewRow row in dataGridView1.Rows)
+
+                    using (var tran = conn.BeginTransaction())
                     {
-                        if (row.IsNewRow) continue;
-                        SaveFunctionRow(conn, row);
+                        // Vonat adatainak mentése
+                        using (var cmdUpdName = new MySqlCommand("UPDATE trains SET name = @name WHERE id = @tid", conn, tran))
+                        {
+                            cmdUpdName.Parameters.AddWithValue("@name", textBoxTrainName.Text.Trim());
+                            cmdUpdName.Parameters.AddWithValue("@tid", trainId);
+                            cmdUpdName.ExecuteNonQuery();
+                        }
+
+                        using (var cmdUpdAddr = new MySqlCommand("UPDATE train_details SET dcc_address = @addr WHERE train_id = @tid", conn, tran))
+                        {
+                            cmdUpdAddr.Parameters.AddWithValue("@addr", numericUpDownTrainAddress.Value);
+                            cmdUpdAddr.Parameters.AddWithValue("@tid", trainId);
+                            cmdUpdAddr.ExecuteNonQuery();
+                        }
+
+                        foreach (DataGridViewRow row in dataGridView1.Rows)
+                        {
+                            if (row.IsNewRow) continue;
+                            SaveFunctionRow(conn, row, tran);
+                        }
+
+                        tran.Commit();
                     }
                 }
                 DialogResult = DialogResult.OK;
@@ -149,7 +189,7 @@ namespace minitrains
         /// <summary>
         /// Elment egy sort (funkciót) az adatbázisba.
         /// </summary>
-        private void SaveFunctionRow(MySqlConnection conn, DataGridViewRow row)
+        private void SaveFunctionRow(MySqlConnection conn, DataGridViewRow row, MySqlTransaction tran)
         {
             int functionId = Convert.ToInt32(row.Cells["colFunctionId"].Value);
             bool visible = Convert.ToBoolean(row.Cells["colVisible"].Value);
@@ -158,17 +198,17 @@ namespace minitrains
             object iconCell = row.Cells["colIconFile"].Value;
             string iconFile = iconCell == null || iconCell == DBNull.Value ? "" : Convert.ToString(iconCell);
 
-            UpdateFunction(conn, functionId, visible, iconFile);
-            UpsertFunctionSettings(conn, functionId, name, defaultState);
+            UpdateFunction(conn, functionId, visible, iconFile, tran);
+            UpsertFunctionSettings(conn, functionId, name, defaultState, tran);
         }
 
         /// <summary>
         /// Frissíti a functions táblát (hidden, icon mezők).
         /// </summary>
-        private void UpdateFunction(MySqlConnection conn, int functionId, bool visible, string iconFile)
+        private void UpdateFunction(MySqlConnection conn, int functionId, bool visible, string iconFile, MySqlTransaction tran)
         {
             var cmdUpd = new MySqlCommand(
-                "UPDATE functions SET hidden=@h, icon=@ic WHERE id=@fid", conn);
+                "UPDATE functions SET hidden=@h, icon=@ic WHERE id=@fid", conn, tran);
 
             cmdUpd.Parameters.AddWithValue("@h", visible ? 0 : 1);
             cmdUpd.Parameters.AddWithValue("@ic", string.IsNullOrEmpty(iconFile) ? (object)DBNull.Value : iconFile);
@@ -179,10 +219,10 @@ namespace minitrains
         /// <summary>
         /// Beszúrja vagy frissíti a functions_settings sort.
         /// </summary>
-        private void UpsertFunctionSettings(MySqlConnection conn, int functionId, string name, bool defaultState)
+        private void UpsertFunctionSettings(MySqlConnection conn, int functionId, string name, bool defaultState, MySqlTransaction tran)
         {
             var cmdCheck = new MySqlCommand(
-                "SELECT id FROM functions_settings WHERE function_id=@fid", conn);
+                "SELECT id FROM functions_settings WHERE function_id=@fid", conn, tran);
             cmdCheck.Parameters.AddWithValue("@fid", functionId);
             var exists = cmdCheck.ExecuteScalar();
 
@@ -191,7 +231,7 @@ namespace minitrains
                 var cmdIns = new MySqlCommand(@"
                         INSERT INTO functions_settings
                         (function_id, custom_name, default_state)
-                        VALUES (@fid,@cn,@ds)", conn);
+                        VALUES (@fid,@cn,@ds)", conn, tran);
 
                 cmdIns.Parameters.AddWithValue("@fid", functionId);
                 cmdIns.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
@@ -204,7 +244,7 @@ namespace minitrains
                         UPDATE functions_settings
                         SET custom_name=@cn,
                             default_state=@ds
-                        WHERE function_id=@fid", conn);
+                        WHERE function_id=@fid", conn, tran);
 
                 cmdUpd2.Parameters.AddWithValue("@cn", string.IsNullOrEmpty(name) ? (object)DBNull.Value : name);
                 cmdUpd2.Parameters.AddWithValue("@ds", defaultState ? 1 : 0);
@@ -283,6 +323,10 @@ namespace minitrains
         private DataGridView dataGridView1;
         private Button buttonSave;
         private Button buttonCancel;
+        private TextBox textBoxTrainName;
+        private NumericUpDown numericUpDownTrainAddress;
+        private Label labelTrainName;
+        private Label labelTrainAddress;
 
         protected override void Dispose(bool disposing)
         {
@@ -299,7 +343,12 @@ namespace minitrains
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.textBoxTrainName = new System.Windows.Forms.TextBox();
+            this.numericUpDownTrainAddress = new System.Windows.Forms.NumericUpDown();
+            this.labelTrainName = new System.Windows.Forms.Label();
+            this.labelTrainAddress = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTrainAddress)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -312,7 +361,7 @@ namespace minitrains
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(12, 12);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(560, 337);
+            this.dataGridView1.Size = new System.Drawing.Size(560, 310);
             this.dataGridView1.TabIndex = 0;
             // define columns
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colFunctionId", Visible = false });
@@ -325,6 +374,47 @@ namespace minitrains
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colIconFile", Visible = false });
 
             this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
+
+            //
+            // labelTrainName
+            //
+            this.labelTrainName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelTrainName.AutoSize = true;
+            this.labelTrainName.Location = new System.Drawing.Point(12, 335);
+            this.labelTrainName.Name = "labelTrainName";
+            this.labelTrainName.Size = new System.Drawing.Size(59, 13);
+            this.labelTrainName.TabIndex = 3;
+            this.labelTrainName.Text = "Vonat név:";
+
+            //
+            // textBoxTrainName
+            //
+            this.textBoxTrainName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBoxTrainName.Location = new System.Drawing.Point(110, 332);
+            this.textBoxTrainName.Name = "textBoxTrainName";
+            this.textBoxTrainName.Size = new System.Drawing.Size(150, 20);
+            this.textBoxTrainName.TabIndex = 4;
+
+            //
+            // labelTrainAddress
+            //
+            this.labelTrainAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelTrainAddress.AutoSize = true;
+            this.labelTrainAddress.Location = new System.Drawing.Point(12, 365);
+            this.labelTrainAddress.Name = "labelTrainAddress";
+            this.labelTrainAddress.Size = new System.Drawing.Size(59, 13);
+            this.labelTrainAddress.TabIndex = 5;
+            this.labelTrainAddress.Text = "Vonat cím (DCC):";
+
+            //
+            // numericUpDownTrainAddress
+            //
+            this.numericUpDownTrainAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.numericUpDownTrainAddress.Location = new System.Drawing.Point(110, 363);
+            this.numericUpDownTrainAddress.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
+            this.numericUpDownTrainAddress.Name = "numericUpDownTrainAddress";
+            this.numericUpDownTrainAddress.Size = new System.Drawing.Size(150, 20);
+            this.numericUpDownTrainAddress.TabIndex = 6;
 
             // 
             // buttonSave
@@ -354,6 +444,10 @@ namespace minitrains
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 402);
+            this.Controls.Add(this.labelTrainName);
+            this.Controls.Add(this.textBoxTrainName);
+            this.Controls.Add(this.labelTrainAddress);
+            this.Controls.Add(this.numericUpDownTrainAddress);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.dataGridView1);
@@ -364,7 +458,9 @@ namespace minitrains
             this.StartPosition = FormStartPosition.CenterParent;
             this.Text = "Edit Functions";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTrainAddress)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
     }
 }

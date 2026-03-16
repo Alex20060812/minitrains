@@ -45,14 +45,14 @@
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(168, 363);
+            textBox1.Location = new Point(217, 363);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(127, 23);
             textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(168, 403);
+            textBox2.Location = new Point(217, 403);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(127, 23);
             textBox2.TabIndex = 2;
@@ -60,7 +60,7 @@
             // button2
             // 
             button2.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
-            button2.Location = new Point(341, 403);
+            button2.Location = new Point(475, 526);
             button2.Name = "button2";
             button2.Size = new Size(80, 30);
             button2.TabIndex = 3;
@@ -93,7 +93,7 @@
             // 
             checkBox_RememberMe.AutoSize = true;
             checkBox_RememberMe.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
-            checkBox_RememberMe.Location = new Point(341, 363);
+            checkBox_RememberMe.Location = new Point(426, 361);
             checkBox_RememberMe.Name = "checkBox_RememberMe";
             checkBox_RememberMe.Size = new Size(129, 20);
             checkBox_RememberMe.TabIndex = 6;
@@ -112,7 +112,7 @@
             // 
             // textBox_Port
             // 
-            textBox_Port.Location = new Point(168, 446);
+            textBox_Port.Location = new Point(217, 446);
             textBox_Port.Name = "textBox_Port";
             textBox_Port.Size = new Size(127, 23);
             textBox_Port.TabIndex = 8;
@@ -124,13 +124,13 @@
             labelZ21Ip.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
             labelZ21Ip.Location = new Point(36, 486);
             labelZ21Ip.Name = "labelZ21Ip";
-            labelZ21Ip.Size = new Size(50, 18);
+            labelZ21Ip.Size = new Size(48, 18);
             labelZ21Ip.TabIndex = 9;
             labelZ21Ip.Text = "Z21 IP:";
             // 
             // textBox_Z21Ip
             // 
-            textBox_Z21Ip.Location = new Point(168, 486);
+            textBox_Z21Ip.Location = new Point(217, 486);
             textBox_Z21Ip.Name = "textBox_Z21Ip";
             textBox_Z21Ip.Size = new Size(127, 23);
             textBox_Z21Ip.TabIndex = 10;
@@ -142,13 +142,13 @@
             labelZ21Port.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
             labelZ21Port.Location = new Point(36, 526);
             labelZ21Port.Name = "labelZ21Port";
-            labelZ21Port.Size = new Size(67, 18);
+            labelZ21Port.Size = new Size(63, 18);
             labelZ21Port.TabIndex = 11;
             labelZ21Port.Text = "Z21 Port:";
             // 
             // textBox_Z21Port
             // 
-            textBox_Z21Port.Location = new Point(168, 526);
+            textBox_Z21Port.Location = new Point(217, 526);
             textBox_Z21Port.Name = "textBox_Z21Port";
             textBox_Z21Port.Size = new Size(127, 23);
             textBox_Z21Port.TabIndex = 12;
@@ -159,7 +159,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(484, 581);
+            ClientSize = new Size(604, 581);
             Controls.Add(textBox_Z21Port);
             Controls.Add(labelZ21Port);
             Controls.Add(textBox_Z21Ip);

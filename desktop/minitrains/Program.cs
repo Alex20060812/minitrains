@@ -31,8 +31,7 @@ namespace minitrains
                 }
                 else
                 {
-                    // ide is tegyünk logot, hogy lásd, erre az ágra megy‑e
-                    MessageBox.Show("Login nem OK, kilépés.", "DEBUG");
+                    
                     Application.Exit();
                 }
             }

@@ -73,21 +73,7 @@ namespace minitrains
             }
 
 
-            z21.OnConnectionStateChanged += connected =>
-            {
-                if (IsDisposed || !IsHandleCreated) return;
-                BeginInvoke(new Action(() =>
-                {
-                    if (connected)
-                    {
-                        label9.Text = "kapcsolat aktív";
-                    }
-                    else
-                    {
-                        label9.Text = "a kapcsolat megszakadt!";
-                    }
-                }));
-            };
+            
 
         }
 
@@ -99,7 +85,7 @@ namespace minitrains
             try
             {
 
-                z21.Connect("192.168.0.111", int.Parse("21105"));
+                z21.Connect(GlobalConfig.Z21IP, int.Parse(GlobalConfig.Z21Port));
 
             }
             catch (Exception ex)
@@ -126,7 +112,7 @@ namespace minitrains
                 {
                     BackgroundImage = Image.FromFile("..//..//..//Pictures//20250502-IMG_1315.jpg");
                 }
-                catch { MessageBox.Show("a"); }
+                catch { MessageBox.Show("Hiba a háttér betöltése közben!"); }
 
 
 
@@ -134,7 +120,7 @@ namespace minitrains
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Form_vezetes Load hiba: " + ex.Message);
+                
                 throw;
             }
         }
@@ -241,8 +227,7 @@ namespace minitrains
         /// </summary>
         private void TurnOnDefaultFunctionsForAllTrains()
         {
-            // z21-nek csatlakozva kell lennie
-            if (z21 == null || !z21.IsConnected)
+            if (z21 == null)
                 return;
 
             foreach (var kvp in trainDbMap)
@@ -250,10 +235,13 @@ namespace minitrains
                 var train = kvp.Key;
                 if (train.Address <= 0) continue;
 
-                // minden aktív funkció kapcsolása
-                foreach (int fn in train.ActiveFunctions)
+                // Végignézzük az összes lehetséges funkciót (0-28)
+                for (int fn = 0; fn <= 28; fn++)
                 {
-                    z21.SetFunction(train.Address, fn, true);
+                    bool isActive = train.ActiveFunctions.Contains(fn);
+
+                    // Elküldjük a z21-nek az összes funkció állapotát
+                    z21.SetFunction(train.Address, fn, isActive);
 
                     // ha a kijelölt vonat, és van hozzá gomb, állítsuk a gomb színét is
                     if (SelectedTrain() == train && functionButtons != null &&
@@ -261,7 +249,7 @@ namespace minitrains
                     {
                         var btn = functionButtons[fn];
                         if (btn != null)
-                            btn.BackColor = Color.Yellow;
+                            btn.BackColor = isActive ? Color.Yellow : Color.Gray;
                     }
                 }
             }
@@ -573,7 +561,7 @@ namespace minitrains
                                     cmdFunc.Parameters.Clear();
                                     cmdFunc.Parameters.AddWithValue("@tid", newId);
                                     cmdFunc.Parameters.AddWithValue("@num", i);
-                                    cmdFunc.Parameters.AddWithValue("@fname", "f" + i);
+                                    cmdFunc.Parameters.AddWithValue("@fname", "F" + i);
                                     cmdFunc.ExecuteNonQuery();
                                 }
                             }
@@ -632,6 +620,17 @@ namespace minitrains
             {
                 if (editor.ShowDialog() == DialogResult.OK)
                 {
+                    sel.Name = editor.UpdatedTrainName;
+                    sel.Address = editor.UpdatedTrainAddress;
+
+                    // ComboBox frissítése, hogy a megváltozott név látszódjon
+                    int idx = comboBox_vonatvalasztas.SelectedIndex;
+                    comboBox_vonatvalasztas.Items[idx] = sel;
+
+                    // Labelek frissítése
+                    label4.Text = "Név: " + sel.Name;
+                    label3.Text = "Cím: " + sel.Address.ToString();
+
                     LoadFunctionsForTrain(sel);
                 }
             }

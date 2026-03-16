@@ -164,13 +164,19 @@ namespace minitrains
                     using (var reader = cmd.ExecuteReader())
                     {
                         if (!reader.Read())
+                        {
+                            MessageBox.Show("Sikertelen bejelentkezés! Helytelen felhasználónév vagy jelszó.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
+                        }
 
                         userId = reader.GetInt32("id");
                         storedHash = reader.GetString("password_hash");
 
                         if (!VerifyPassword(password, storedHash))
+                        {
+                            MessageBox.Show("Sikertelen bejelentkezés! Helytelen felhasználónév vagy jelszó.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
+                        }
                     }
 
                     if (checkBox_RememberMe.Checked)
