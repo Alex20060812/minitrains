@@ -29,25 +29,25 @@ namespace minitrains
         public bool RememberMe { get; }
         private Z21Udp z21 = new Z21Udp();
         private Button[] functionButtons;
-       
+
 
         public Form_vezetes(int userId, bool rememberMe)
         {
-            
+
             InitializeComponent();
 
             CurrentUserId = userId;
-            
+
             RememberMe = rememberMe;
 
             try
             {
 
-                
-                pictureBox1.Image = Image.FromFile("..//..//..//Pictures//play.png");
-                
 
-                
+                pictureBox1.Image = Image.FromFile("..//..//..//Pictures//play.png");
+
+
+
                 z21.OnTrackPowerChanged += state =>
                 {
                     if (state)
@@ -55,7 +55,7 @@ namespace minitrains
                     else
                         pictureBox1.Image = Image.FromFile("..//..//..//Pictures//pause.png");
                 };
-                
+
             }
             catch (Exception ex)
             {
@@ -88,19 +88,19 @@ namespace minitrains
                     }
                 }));
             };
-            
+
         }
 
 
         private void Form_vezetes_Load(object? sender, EventArgs e)
         {
-            
+
 
             try
             {
-                
+
                 z21.Connect("192.168.0.111", int.Parse("21105"));
-                
+
             }
             catch (Exception ex)
             {
@@ -128,9 +128,9 @@ namespace minitrains
                 }
                 catch { MessageBox.Show("a"); }
 
-                
 
-               
+
+
             }
             catch (Exception ex)
             {
@@ -159,7 +159,7 @@ namespace minitrains
             }
 
 
-            
+
             var btn = functionButtons[fnNumber];
             btn.BackColor = isActive ? Color.Gray : Color.Yellow;
 
@@ -218,7 +218,7 @@ namespace minitrains
                     }
                 }
 
-                
+
 
                 //minden vonatra betöltjük a funkciókat DB-ből
                 foreach (var kvp in trainDbMap)
@@ -278,7 +278,7 @@ namespace minitrains
             sel.ActiveFunctions.Clear();
             string connStr = GlobalConfig.GetConnectionString();
 
-            
+
             if (functionButtons == null)
             {
                 functionButtons = new[]
@@ -292,7 +292,7 @@ namespace minitrains
                 };
             }
 
-            
+
             for (int i = 0; i < functionButtons.Length; i++)
             {
                 var btn = functionButtons[i];
@@ -347,10 +347,10 @@ namespace minitrains
 
                             var btn = functionButtons[number];
 
-                            
+
                             btn.Visible = !hidden;
 
-                            
+
                             string nameToShow = !string.IsNullOrEmpty(customName)
                                 ? customName
                                 : (!string.IsNullOrEmpty(defaultName) ? defaultName : "F" + number);
@@ -367,9 +367,9 @@ namespace minitrains
                                         using (var img = Image.FromFile(path))
                                         {
                                             btn.Image = new Bitmap(img);
-                                            
+
                                         }
-                                        
+
                                         btn.ImageAlign = ContentAlignment.TopCenter;
                                         btn.TextAlign = ContentAlignment.BottomCenter;
                                     }
@@ -402,12 +402,12 @@ namespace minitrains
                     }
                 }
 
-                
-                
+
+
             }
             catch
             {
-                
+
             }
         }
 
@@ -492,7 +492,7 @@ namespace minitrains
             if (trackBar1.Value > 0)
             {
                 vesz = true;
-                
+
             }
             if (vesz)
             {
@@ -859,6 +859,95 @@ namespace minitrains
         private void button_F28_Click(object sender, EventArgs e)
         {
             ToggleFunction(28);
+        }
+
+        private void button_DELTrain_Click(object sender, EventArgs e)
+        {
+            var sel = SelectedTrain();
+            if (sel == null) return;
+
+            if (!trainDbMap.TryGetValue(sel, out int trainId))
+                return;
+
+            var confirmResult = MessageBox.Show(
+                $"Biztosan törölni szeretnéd a(z) '{sel.Name}' nevű vonatot minden adatával együtt?",
+                "Törlés megerősítése",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                try
+                {
+                    using (var conn = new MySqlConnection(GlobalConfig.GetConnectionString()))
+                    {
+                        conn.Open();
+                        using (var tran = conn.BeginTransaction())
+                        {
+                            // 1. functions_settings törlése (ami a functions-re hivatkozik)
+                            using (var cmd = new MySqlCommand("DELETE FROM functions_settings WHERE function_id IN (SELECT id FROM functions WHERE train_id = @tid)", conn, tran))
+                            {
+                                cmd.Parameters.AddWithValue("@tid", trainId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 2. functions törlése
+                            using (var cmd = new MySqlCommand("DELETE FROM functions WHERE train_id = @tid", conn, tran))
+                            {
+                                cmd.Parameters.AddWithValue("@tid", trainId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 3. train_details törlése
+                            using (var cmd = new MySqlCommand("DELETE FROM train_details WHERE train_id = @tid", conn, tran))
+                            {
+                                cmd.Parameters.AddWithValue("@tid", trainId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // 4. maga a vonat törlése
+                            using (var cmd = new MySqlCommand("DELETE FROM trains WHERE id = @tid", conn, tran))
+                            {
+                                cmd.Parameters.AddWithValue("@tid", trainId);
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            tran.Commit();
+                        }
+                    }
+
+                    // Eltávolítás a felületről és a memóriából
+                    trainDbMap.Remove(sel);
+                    comboBox_vonatvalasztas.Items.Remove(sel);
+
+                    if (comboBox_vonatvalasztas.Items.Count > 0)
+                    {
+                        comboBox_vonatvalasztas.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        // Ha nincs több vonat, kiürítjük a UI-t
+                        label3.Text = "Cím: ";
+                        label2.Text = "Irány: ";
+                        label4.Text = "Név: ";
+                        label1.Text = "Sebesség: ";
+                        trackBar1.Value = 0;
+                        if (functionButtons != null)
+                        {
+                            foreach (var btn in functionButtons) 
+                            {
+                                if (btn != null) btn.Visible = false;
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("A vonat sikeresen törölve lett.", "Törlés", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hiba a vonat törlése közben: " + ex.Message, "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

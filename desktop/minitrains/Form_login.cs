@@ -17,6 +17,8 @@ namespace minitrains
         {
             InitializeComponent();
             textBox_Port.Text = GlobalConfig.DbPort;
+            textBox_Z21Ip.Text = GlobalConfig.Z21IP;
+            textBox_Z21Port.Text = GlobalConfig.Z21Port;
             this.AcceptButton = button2;
             this.Shown += Form_login_Shown;
 
@@ -136,11 +138,13 @@ namespace minitrains
             string username = textBox1.Text;
             string password = textBox2.Text;
             string port = textBox_Port.Text;
+            string z21Ip = textBox_Z21Ip.Text;
+            string z21Port = textBox_Z21Port.Text;
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(port))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(port) || string.IsNullOrWhiteSpace(z21Ip) || string.IsNullOrWhiteSpace(z21Port))
                 return;
 
-            GlobalConfig.Save(port);
+            GlobalConfig.Save(port, z21Ip, z21Port);
 
             try
             {

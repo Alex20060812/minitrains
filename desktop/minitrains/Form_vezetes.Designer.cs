@@ -78,6 +78,7 @@
             button_functions = new Button();
             pictureBox1 = new PictureBox();
             label9 = new Label();
+            button_DELTrain = new Button();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -100,7 +101,7 @@
             button_hozzaad.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 238);
             button_hozzaad.Location = new Point(4, 12);
             button_hozzaad.Name = "button_hozzaad";
-            button_hozzaad.Size = new Size(35, 36);
+            button_hozzaad.Size = new Size(35, 37);
             button_hozzaad.TabIndex = 1;
             button_hozzaad.Text = "+";
             button_hozzaad.UseVisualStyleBackColor = true;
@@ -792,6 +793,17 @@
             label9.Size = new Size(0, 15);
             label9.TabIndex = 19;
             // 
+            // button_DELTrain
+            // 
+            button_DELTrain.Font = new Font("Bahnschrift", 9F, FontStyle.Bold, GraphicsUnit.Point, 238);
+            button_DELTrain.Location = new Point(195, 12);
+            button_DELTrain.Name = "button_DELTrain";
+            button_DELTrain.Size = new Size(41, 37);
+            button_DELTrain.TabIndex = 1;
+            button_DELTrain.Text = "-";
+            button_DELTrain.UseVisualStyleBackColor = true;
+            button_DELTrain.Click += button_DELTrain_Click;
+            // 
             // Form_vezetes
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -799,6 +811,7 @@
             BackColor = Color.White;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(889, 861);
+            Controls.Add(button_DELTrain);
             Controls.Add(label9);
             Controls.Add(pictureBox1);
             Controls.Add(button_functions);
@@ -883,5 +896,6 @@
         private Button button_functions;
         private PictureBox pictureBox1;
         private Label label9;
+        private Button button_DELTrain;
     }
 }
