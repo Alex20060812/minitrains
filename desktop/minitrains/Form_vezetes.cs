@@ -173,7 +173,7 @@ namespace minitrains
         private async void LoadUserTrains()
         {
             if (CurrentUserId <= 0) return;
-            string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
+            string connStr = GlobalConfig.GetConnectionString();
 
             try
             {
@@ -276,7 +276,7 @@ namespace minitrains
                 return;
 
             sel.ActiveFunctions.Clear();
-            string connStr = "Server=localhost;Database=modellvasut;user=root;password=;";
+            string connStr = GlobalConfig.GetConnectionString();
 
             
             if (functionButtons == null)
@@ -536,7 +536,7 @@ namespace minitrains
 
                 decimal szam = kisAblak.NumericErtek;
                 string szoveg = kisAblak.TextErtek;
-                string connStr = $"Server=localhost;Database=modellvasut;user=root;password=";
+                string connStr = GlobalConfig.GetConnectionString();
 
                 try
                 {
@@ -655,7 +655,7 @@ namespace minitrains
 
                 try
                 {
-                    using (var conn = new MySqlConnection("Server=localhost;Database=modellvasut;user=root;password=;"))
+                    using (var conn = new MySqlConnection(GlobalConfig.GetConnectionString()))
                     {
                         conn.Open();
                         var cmd = new MySqlCommand("UPDATE users SET remember_token = NULL WHERE id = @id", conn);

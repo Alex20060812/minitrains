@@ -12,8 +12,7 @@ namespace minitrains
     public partial class Form_function_editor : Form
     {
         private readonly int trainId;
-        private readonly string connStr =
-            "Server=localhost;Database=modellvasut;user=root;password=;";
+        private readonly string connStr = GlobalConfig.GetConnectionString();
 
         public Form_function_editor(int trainId)
         {
@@ -224,12 +223,21 @@ namespace minitrains
         }
 
         /// <summary>
-        /// Ikon cellára kattintás esetén lehetőséget ad új ikon kiválasztására.
+        /// Ikon cellára kattintás esetén lehetőséget ad új ikon kiválasztására (bal gomb), vagy törli azt (jobb gomb).
         /// </summary>
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex < 0) return;
             if (dataGridView1.Columns[e.ColumnIndex].Name != "colIcon") return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                dataGridView1.Rows[e.RowIndex].Cells["colIconFile"].Value = DBNull.Value;
+                dataGridView1.Rows[e.RowIndex].Cells["colIcon"].Value = null;
+                return;
+            }
+
+            if (e.Button != MouseButtons.Left) return;
 
             string iconsDir = Path.Combine(Application.StartupPath, "icons");
             Directory.CreateDirectory(iconsDir);
@@ -316,7 +324,7 @@ namespace minitrains
             // hidden column to store icon filename
             this.dataGridView1.Columns.Add(new DataGridViewTextBoxColumn() { Name = "colIconFile", Visible = false });
 
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
 
             // 
             // buttonSave

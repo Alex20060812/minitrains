@@ -16,7 +16,7 @@ namespace minitrains
         public Form_login()
         {
             InitializeComponent();
-
+            textBox_Port.Text = GlobalConfig.DbPort;
             this.AcceptButton = button2;
             this.Shown += Form_login_Shown;
 
@@ -100,8 +100,7 @@ namespace minitrains
                 string savedUsername = lines[0];
                 string savedToken = lines[1];
 
-                using (var conn = new MySqlConnection(
-                           "Server=localhost;Database=modellvasut;user=root;password=;"))
+                using (var conn = new MySqlConnection(GlobalConfig.GetConnectionString()))
                 {
                     conn.Open();
 
@@ -136,13 +135,16 @@ namespace minitrains
         {
             string username = textBox1.Text;
             string password = textBox2.Text;
+            string port = textBox_Port.Text;
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(port))
                 return;
+
+            GlobalConfig.Save(port);
 
             try
             {
-                using (var conn = new MySqlConnection("Server=localhost;Database=modellvasut;user=root;password="))
+                using (var conn = new MySqlConnection(GlobalConfig.GetConnectionString()))
                 {
                     conn.Open();
 

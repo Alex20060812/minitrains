@@ -216,6 +216,7 @@
             // button_F0
             // 
             button_F0.BackColor = Color.Gray;
+            button_F0.BackgroundImageLayout = ImageLayout.Stretch;
             button_F0.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F0.ForeColor = Color.Black;
             button_F0.ImageAlign = ContentAlignment.TopCenter;
@@ -231,6 +232,7 @@
             // button_F1
             // 
             button_F1.BackColor = Color.Gray;
+            button_F1.BackgroundImageLayout = ImageLayout.Stretch;
             button_F1.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F1.ForeColor = Color.Black;
             button_F1.ImageAlign = ContentAlignment.TopCenter;
@@ -246,6 +248,7 @@
             // button_F2
             // 
             button_F2.BackColor = Color.Gray;
+            button_F2.BackgroundImageLayout = ImageLayout.Stretch;
             button_F2.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
             button_F2.ForeColor = Color.Black;
             button_F2.ImageAlign = ContentAlignment.TopCenter;

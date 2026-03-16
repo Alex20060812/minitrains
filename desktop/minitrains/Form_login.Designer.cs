@@ -35,18 +35,20 @@
             label1 = new Label();
             label2 = new Label();
             checkBox_RememberMe = new CheckBox();
+            label3 = new Label();
+            textBox_Port = new TextBox();
             SuspendLayout();
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(168, 360);
+            textBox1.Location = new Point(168, 363);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(127, 23);
             textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(168, 413);
+            textBox2.Location = new Point(168, 403);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(127, 23);
             textBox2.TabIndex = 2;
@@ -54,7 +56,7 @@
             // button2
             // 
             button2.Font = new Font("Bahnschrift", 9.75F, FontStyle.Bold);
-            button2.Location = new Point(341, 408);
+            button2.Location = new Point(341, 403);
             button2.Name = "button2";
             button2.Size = new Size(80, 30);
             button2.TabIndex = 3;
@@ -67,7 +69,7 @@
             label1.AutoSize = true;
             label1.BackColor = SystemColors.Control;
             label1.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
-            label1.Location = new Point(49, 363);
+            label1.Location = new Point(36, 363);
             label1.Name = "label1";
             label1.Size = new Size(113, 18);
             label1.TabIndex = 4;
@@ -77,7 +79,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
-            label2.Location = new Point(49, 413);
+            label2.Location = new Point(36, 408);
             label2.Name = "label2";
             label2.Size = new Size(54, 18);
             label2.TabIndex = 5;
@@ -94,11 +96,32 @@
             checkBox_RememberMe.Text = "Emlékezzen rám?";
             checkBox_RememberMe.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Bahnschrift", 11.25F, FontStyle.Bold);
+            label3.Location = new Point(36, 446);
+            label3.Name = "label3";
+            label3.Size = new Size(38, 18);
+            label3.TabIndex = 7;
+            label3.Text = "Port:";
+            // 
+            // textBox_Port
+            // 
+            textBox_Port.Location = new Point(168, 446);
+            textBox_Port.Name = "textBox_Port";
+            textBox_Port.Size = new Size(127, 23);
+            textBox_Port.TabIndex = 8;
+            textBox_Port.Text = "3306";
+            // 
             // Form_login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(484, 461);
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(484, 481);
+            Controls.Add(textBox_Port);
+            Controls.Add(label3);
             Controls.Add(checkBox_RememberMe);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -121,5 +144,7 @@
         private Label label1;
         private Label label2;
         private CheckBox checkBox_RememberMe;
+        private Label label3;
+        private TextBox textBox_Port;
     }
 }

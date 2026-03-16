@@ -12,7 +12,7 @@ namespace minitrains
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            
+            GlobalConfig.Load();
 
             using (var loginForm = new Form_login())
             {
