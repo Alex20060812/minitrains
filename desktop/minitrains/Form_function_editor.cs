@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -125,7 +126,9 @@ namespace minitrains
         /// </summary>
         private void SetIconCell(DataGridViewRow row, string iconFile)
         {
-            string path = Path.Combine(Application.StartupPath, "icons", iconFile);
+            string baseDir = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", ".."));
+            string path = Path.Combine(baseDir, "Pictures", "Icons", iconFile);
+
             if (File.Exists(path))
             {
                 try
@@ -279,12 +282,14 @@ namespace minitrains
 
             if (e.Button != MouseButtons.Left) return;
 
-            string iconsDir = Path.Combine(Application.StartupPath, "icons");
+            string baseDir = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", ".."));
+            string iconsDir = Path.Combine(baseDir, "Pictures", "Icons");
             Directory.CreateDirectory(iconsDir);
 
             using (var ofd = new OpenFileDialog())
             {
                 ofd.InitialDirectory = iconsDir;
+                ofd.RestoreDirectory = true;
                 ofd.Filter = "Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.ico";
 
                 if (ofd.ShowDialog(this) == DialogResult.OK)

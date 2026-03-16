@@ -347,7 +347,8 @@ namespace minitrains
                             // ikon (ugyanaz a mappa, mint az editorban)
                             if (!string.IsNullOrEmpty(iconFile))
                             {
-                                string path = Path.Combine(Application.StartupPath, "icons", iconFile);
+                                string baseDir = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", ".."));
+                                string path = Path.Combine(baseDir, "Pictures", "Icons", iconFile);
                                 if (File.Exists(path))
                                 {
                                     try
