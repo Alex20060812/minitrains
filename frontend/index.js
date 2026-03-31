@@ -270,7 +270,7 @@ class ImageCarousel {
       update();
     });
     indicators.appendChild(dot);
-    return dot;
+    return dot; q
   });
 
   function update() {
@@ -291,3 +291,4 @@ class ImageCarousel {
   // indulás
   update();
 }
+
