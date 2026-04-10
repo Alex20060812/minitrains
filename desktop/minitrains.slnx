@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="minitrains/minitrains.csproj" />
+  <Project Path="Setup/Setup.vdproj" Type="Installer" />
 </Solution>
