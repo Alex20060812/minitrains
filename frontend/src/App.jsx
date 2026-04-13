@@ -92,16 +92,20 @@ function App() {
         </section>
       </main>
 
-      <section id="download" className="card">
-        <div className="download-content">
-          <h2>Letöltés</h2>
-          <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
+        <section id="download" className="card">
+      <div className="download-content">
+        <h2>Letöltés</h2>
+        <p>Kattints az alábbi gombra a MiniTrains letöltéséhez:</p>
 
-          <button id="downloadBtn" className="download-button">Letöltés</button>
-          <p id="downloadMessage" className="ok" style={{ display: "none" }}></p>
+        <button
+           id="downloadBtn"
+            className="download-button"
+          onClick={() => window.location.href = "https://github.com/Alex20060812/minitrains"}
+          >
+            Letöltés
+        </button>
 
-          <h3>Elérhető letöltések</h3>
-          <ul id="downloadList" className="list"></ul>
+        <p id="downloadMessage" className="ok" style={{ display: "none" }}></p>
         </div>
       </section>
 
