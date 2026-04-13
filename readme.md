@@ -240,8 +240,8 @@ Vasútmodellhez tartozó technikai adatok.
 ## ⚙️) Backend indítása
 
 - Nyissuk meg a minitrains mappát Visual Studio Code-ban.
-
-- Kattintsunk jobb egér gombbal a backend mappára.
+- 
+- Kattintsunk jobb egér gombbal a backend mappában talaható src mappára.
 
 
 - Majd válasszuk ezt:
