@@ -1,8 +1,123 @@
-import React from "react";
-
-
+import React, { useState, useEffect } from "react";
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [username, setUsername] = useState("");
+  const [trains, setTrains] = useState([]);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const images = [
+  "/kepek/20251229-IMG_4029.jpg",
+  "/kepek/20251229-IMG_4033.jpg",
+  "/kepek/20251229-IMG_4075.jpg",
+  "/kepek/20251229-IMG_4006.jpg",
+  "/kepek/20251229-IMG_4002.jpg",
+  "/kepek/20251229-IMG_3985.jpg",
+  "/kepek/20251229-IMG_3973.jpg",
+  "/kepek/20251229-IMG_3964.jpg"
+  ];
+  
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // ⏱ AUTO SLIDE 2 másodpercenként
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 2000);
+  
+    return () => clearInterval(interval);
+  }, []);
+
+
+  // Bejelentkezett felhasználó neve lekérése
+  useEffect(() => {
+    if (token) {
+      fetch("http://localhost:3000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.username) setUsername(data.username);
+        })
+        .catch(() => {});
+    }
+  }, [token]);
+
+  // Vonatok lekérése bejelentkezés után
+  useEffect(() => {
+    if (token) {
+      fetch("http://localhost:3000/api/trains", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setTrains(data))
+        .catch(() => setTrains([]));
+    }
+  }, [token]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    const username = e.target.loginUsername.value;
+    const email = e.target.loginEmail.value;
+    const password = e.target.loginPassword.value;
+  
+    try {
+      const res = await fetch("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+  
+      const data = await res.json();
+  
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        setShowLogin(false);
+      } else {
+        alert(data.error || "Hibás bejelentkezés");
+      }
+    } catch {
+      alert("Szerver hiba");
+    }
+  };
+  const handleRegister = async (e) => {
+    e.preventDefault();
+  
+    const username = e.target.registerUsername.value;
+    const email = e.target.registerEmail.value;
+    const password = e.target.registerPassword.value;
+  
+    try {
+      const res = await fetch("http://localhost:3001/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        alert(data.message || "Sikeres regisztráció");
+        setShowRegister(false);
+        setShowLogin(true);
+      } else {
+        alert(data.error || "Hiba történt");
+      }
+    } catch {
+      alert("Szerver hiba");
+    }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken("");
+    setUsername("");
+    setTrains([]);
+  };
+
+ 
+
   return (
     <>
       <header>
@@ -10,88 +125,77 @@ function App() {
           <div className="menu">
             <div className="cim">
               <h1>Welcome to MiniTrains</h1>
-              
             </div>
           </div>
 
           <nav>
             <ul className="nav-links">
               <li><a href="#home">Főoldal</a></li>
+              
               <li><a href="#download">Letöltés</a></li>
-              <li><a href="#contact">Kapcsolat</a></li>
-              <li><a href="#trains">Vonatok</a></li>
+              <li><a href="#descriptionra">Leíras</a></li>
+              
+              
             </ul>
 
             <div className="auth-buttons">
-              <button id="loginBtn">Bejelentkezés</button>
-              <button id="registerBtn">Regisztráció</button>
-              <button id="logoutBtn" style={{ display: "none" }}>
-                Kijelentkezés
-              </button>
+              {!token ? (
+                <>
+                  <button onClick={() => { setShowLogin(true); setShowRegister(false); }}>
+                    Bejelentkezés
+                  </button>
+                  <button onClick={() => { setShowRegister(true); setShowLogin(false); }}>
+                    Regisztráció
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>Üdv, {username}!</span>
+                  <button onClick={handleLogout}>Kijelentkezés</button>
+                </>
+              )}
             </div>
           </nav>
         </section>
       </header>
 
-      {/* CAROUSEL */}
-      <div className="carousel-container">
-        <div className="carousel" id="carousel">
-          <img src="https://www.trains.com/wp-content/uploads/2025/02/CTT-trzoniec-realistic-setting-0225.jpg" alt="Model train realistic landscape" className="carousel-image" />
-          <img src="https://i.ytimg.com/vi/4m8inWO8cgg/sddefault.jpg" alt="HO scale train in snow" className="carousel-image" />
-          <img src="https://cdn11.bigcommerce.com/s-stpzw4awzh/images/stencil/1240x826/uploaded_images/20211114-014209.jpg" alt="Model railway bridge scene" className="carousel-image" />
-          <img src="https://i.ytimg.com/vi/NIrYZtX9Ym0/maxresdefault.jpg" alt="Detailed model train diorama" className="carousel-image" />
-          <img src="IMG_1305.jpg" alt="Saját kép" className="carousel-image" />
-          <img src="https://i.ytimg.com/vi/Ss-sf1hY_RU/maxresdefault.jpg" alt="Detailed HO scale city scene" className="carousel-image" />
-        </div>
-
-        <button className="carousel-btn prev-btn" id="prevBtn">❮</button>
-        <button className="carousel-btn next-btn" id="nextBtn">❯</button>
-
-        <div className="indicators" id="indicators"></div>
-      </div>
+     {/* CAROUSEL – AUTO SLIDE */}
+<div className="carousel-container">
+  <div className="carousel" id="carousel">
+    <img
+      src={images[currentIndex]}
+      alt="carousel"
+      className="carousel-image"
+    />
+  </div>
+</div>
 
       <main>
-        <section id="userInfo" style={{ display: "none" }}>
-          <p>Üdv, <span id="usernameDisplay"></span>!</p>
-        </section>
+        {/* Bejelentkezési form */}
+        {showLogin && !token && (
+          <section id="loginForm" className="card">
+            <h2>Bejelentkezés</h2>
+            <form onSubmit={handleLogin}>
+              <input type="text" name="loginUsername" placeholder="Felhasználónév" required />
+              <input type="email" name="loginEmail" placeholder="Email" required />
+              <input type="password" name="loginPassword" placeholder="Jelszó" required />
+              <button type="submit">Bejelentkezés</button>
+            </form>
+          </section>
+        )}
 
-        <section id="loginForm" className="card" style={{ display: "none" }}>
-          <h2>Bejelentkezés</h2>
-          <form>
-            <input type="text" id="loginUsername" placeholder="Felhasználónév" required />
-            <input type="password" id="loginPassword" placeholder="Jelszó" required />
-            <button type="submit">Bejelentkezés</button>
-          </form>
-          <p id="loginError" className="error"></p>
-        </section>
-
-        <section id="registerForm" className="card" style={{ display: "none" }}>
-          <h2>Regisztráció</h2>
-          <form>
-            <input type="text" id="registerUsername" placeholder="Felhasználónév" required />
-            <input type="password" id="registerPassword" placeholder="Jelszó" required />
-            <button type="submit">Regisztráció</button>
-          </form>
-          <p id="registerError" className="error"></p>
-        </section>
-
-        <section id="trains" className="card" style={{ display: "none" }}>
-          <h2>Vonatok</h2>
-          <p className="hint">Bejelentkezés után jelenik meg. (GET + POST)</p>
-
-          <ul id="trainList" className="list"></ul>
-
-          <h3>Új vonat</h3>
-          <form id="trainForm">
-            <input type="text" id="trainName" placeholder="Vonat neve" required />
-            <button type="submit">Hozzáadás</button>
-          </form>
-
-          <p id="trainMessage" className="ok" style={{ display: "none" }}></p>
-          <p id="trainError" className="error"></p>
-        </section>
-      </main>
-
+        {/* Regisztrációs form */}
+        {showRegister && !token && (
+          <section id="registerForm" className="card">
+            <h2>Regisztráció</h2>
+            <form onSubmit={handleRegister}>
+              <input type="text" name="registerUsername" placeholder="Felhasználónév" required />
+              <input type="email" name="registerEmail" placeholder="Email" required />
+              <input type="password" name="registerPassword" placeholder="Jelszó" required />
+              <button type="submit">Regisztráció</button>
+            </form>
+          </section>
+        )}
         <section id="download" className="card">
       <div className="download-content">
         <h2>Letöltés</h2>
@@ -108,25 +212,40 @@ function App() {
         <p id="downloadMessage" className="ok" style={{ display: "none" }}></p>
         </div>
       </section>
+      {/* LEÍRÁS SZEKCIÓ */}
+      <section id="descriptionra" className="card">
+         <h2>Leírás</h2>
+         <p>
+         A Minitrains egy digitális modellvasút-vezérlő alkalmazás, amely lehetővé teszi a felhasználók számára, hogy számítógépről irányítsák Z21 központtal rendelkező modellvasútjukat.
+         Az alkalmazás egyik fő célja az egyszerűség, átláthatóság és testreszabhatóság.
+         A felhasználók több vasútmodellt is kezelhetnek, melyek beállításai felhasználói fiókhoz kötötten kerülnek eltárolásra. Így egy másik eszközről történő bejelentkezéskor a korábbi konfigurációk automatikusan betöltődnek.
+         
+         <h2>Fő funkciók</h2>
+         Digitális modellvasút vezérlése Z21 központon keresztül
+         Felhasználói fiókok kezelése
+         Több vasútmodell kezelése
+         Funkciók elnevezése
+         Funkciók alapállapotának beállítása
+         Funkciók elrejtése / megjelenítése
+         Ikonok rendelése a funkciókhoz
+         Egyszerű, letisztult felhasználói felület
+              </p>
+          <h2>Követelmények</h2>
+          <p>
+          A program futtatásához szükséges:
 
-      <section id="contact" className="card">
-        <h2>Kapcsolat</h2>
-
-        <form id="contactForm">
-          <input type="text" id="contactName" placeholder="Név" required />
-          <input type="email" id="contactEmail" placeholder="Email" required />
-          <textarea id="contactMessage" placeholder="Üzenet" required></textarea>
-          <button type="submit">Küldés</button>
-          <p id="formMessage" className="ok" style={{ display: "none" }}>
-            Üzenet elküldve!
+            Windows 11 ,
+            Visual Studio 2026,
+            XAMPP,
+            MySQL,
+            WiFi kapcsolat a Z21 központhoz,
           </p>
-          <p id="contactError" className="error"></p>
-        </form>
+              </section>
 
-        <h3>Beérkezett üzenetek (GET)</h3>
-        <ul id="contactList" className="list"></ul>
-      </section>
-      
+        
+
+       
+      </main>
     </>
   );
 }
